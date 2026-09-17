@@ -10,6 +10,7 @@
  * Cost: 2 API units per call; each airport-day is 2 calls (two 12h windows).
  * Requires AERODATABOX_RAPIDAPI_KEY (read from .env.ingest or .env.local, or the environment).
  */
+import { consolidateFlights } from "../src/lib/consolidate";
 import { MAX_RETENTION_MS, readFlightsFile, writeFlightsFile } from "../src/lib/flight-store";
 import { buildWindows, mergeFlights, normalizeFlight, pruneExpired } from "../src/lib/normalize";
 import type { FlightRecord } from "../src/lib/types";
@@ -116,7 +117,8 @@ async function main() {
   if (incoming.length === 0) throw new Error(`No flights fetched (${failures} failed calls); existing data left untouched`);
 
   const existing = await readFlightsFile();
-  const flights = pruneExpired(mergeFlights(existing.flights, incoming), new Date(), MAX_RETENTION_MS);
+  // Consolidate only this pull: a fresh observation replaces older records rather than accumulating.
+  const flights = pruneExpired(mergeFlights(existing.flights, consolidateFlights(incoming)), new Date(), MAX_RETENTION_MS);
   const target = await writeFlightsFile({ updatedAt: seenAt, flights });
   log(`Done: ${incoming.length} fetched, ${flights.length} unique flights saved to ${target}, ${failures} failed calls, units left: ${unitsLeft ?? "?"}`);
 }

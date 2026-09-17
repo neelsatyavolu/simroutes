@@ -17,7 +17,8 @@ export interface FlightRecord {
   id: string;
   flightNumber: string;
   airline: { name: string; iata: string; icao: string };
-  aircraft: string;
+  /** Every aircraft type seen operating this flight during the pulled week. */
+  aircraft: string[];
   depIcao: string;
   arrIcao: string;
   /** Local scheduled departure time, "HH:MM". */

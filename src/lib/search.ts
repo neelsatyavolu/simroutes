@@ -94,7 +94,7 @@ export function searchFlights(
     .map((f) => ({ ...f, dep: airports.get(f.depIcao) ?? null, arr: airports.get(f.arrIcao) ?? null }))
     .filter(
       (f) =>
-        (aircraft.size === 0 || aircraft.has(f.aircraft)) &&
+        (aircraft.size === 0 || f.aircraft.some((a) => aircraft.has(a))) &&
         (airlines.size === 0 || airlines.has(f.airline.iata) || airlines.has(f.airline.icao)) &&
         matchesAirport(dep, f.depIcao, f.dep) &&
         matchesAirport(arr, f.arrIcao, f.arr) &&

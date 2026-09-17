@@ -31,7 +31,7 @@ export function FlightStrip({ flight, index }: { flight: FlightResult; index: nu
         <span className={styles.flightNo}>{flight.flightNumber}</span>
         <span className={styles.airline}>{flight.airline.name}</span>
       </div>
-      <div className={styles.type}>{flight.aircraft}</div>
+      <div className={styles.type}>{flight.aircraft.join(" / ")}</div>
       <AirportCell side="dep" icao={flight.depIcao} airport={flight.dep} time={flight.depLocal} />
       <div className={styles.arrow} aria-hidden>
         <svg viewBox="0 0 40 10" width="40" height="10">

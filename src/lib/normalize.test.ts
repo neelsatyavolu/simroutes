@@ -21,10 +21,10 @@ const departure = {
 };
 
 const EXPECTED: FlightRecord = {
-  id: "BA117-EGLL-KJFK-Boeing777-300ER",
+  id: "BA117-EGLL-KJFK",
   flightNumber: "BA 117",
   airline: { name: "British Airways", iata: "BA", icao: "BAW" },
-  aircraft: "Boeing 777-300ER",
+  aircraft: ["Boeing 777-300ER"],
   depIcao: "EGLL",
   arrIcao: "KJFK",
   depLocal: "09:25",
@@ -55,11 +55,6 @@ describe("normalizeFlight", () => {
       SEEN,
     );
     expect(fromArrivals?.id).toBe(EXPECTED.id);
-  });
-
-  it("keeps different aircraft on the same flight as separate records", () => {
-    const other = normalizeFlight({ ...departure, aircraft: { model: "Boeing 787-10" } }, { icao: "EGLL", direction: "Departure" }, SEEN);
-    expect(other?.id).not.toBe(EXPECTED.id);
   });
 
   const board = { icao: "EGLL", direction: "Departure" } as const;

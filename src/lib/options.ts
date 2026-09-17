@@ -9,7 +9,7 @@ export function buildOptions({ flights, airports, updatedAt }: Dataset): Options
   const usedAirports = new Set<string>();
 
   for (const f of flights) {
-    aircraft.set(f.aircraft, (aircraft.get(f.aircraft) ?? 0) + 1);
+    for (const model of f.aircraft) aircraft.set(model, (aircraft.get(model) ?? 0) + 1);
     const code = f.airline.iata || f.airline.icao;
     if (code) {
       const prev = airlines.get(code);

@@ -15,7 +15,7 @@ const flight = (id: string, over: Partial<FlightRecord>): FlightRecord => ({
   id,
   flightNumber: id,
   airline: { name: "British Airways", iata: "BA", icao: "BAW" },
-  aircraft: "Airbus A320",
+  aircraft: ["Airbus A320"],
   depIcao: "EGLL",
   arrIcao: "KJFK",
   depLocal: "10:00",
@@ -26,10 +26,10 @@ const flight = (id: string, over: Partial<FlightRecord>): FlightRecord => ({
 });
 
 const flights: FlightRecord[] = [
-  flight("F1", { aircraft: "Boeing 777-300ER", durationMin: 480, depLocal: "09:00" }),
-  flight("F2", { aircraft: "Airbus A320", arrIcao: "EGJJ", durationMin: 55, depLocal: "07:30" }),
-  flight("F3", { aircraft: "Airbus A320", depIcao: "EGJJ", arrIcao: "EGHE", durationMin: 35, airline: { name: "Loganair", iata: "LM", icao: "LOG" } }),
-  flight("F4", { aircraft: "Airbus A321neo", depIcao: "KJFK", arrIcao: "EGLL", durationMin: 410 }),
+  flight("F1", { aircraft: ["Boeing 777-300ER"], durationMin: 480, depLocal: "09:00" }),
+  flight("F2", { aircraft: ["Airbus A320"], arrIcao: "EGJJ", durationMin: 55, depLocal: "07:30" }),
+  flight("F3", { aircraft: ["Airbus A320"], depIcao: "EGJJ", arrIcao: "EGHE", durationMin: 35, airline: { name: "Loganair", iata: "LM", icao: "LOG" } }),
+  flight("F4", { aircraft: ["Airbus A321neo", "Airbus A320"], depIcao: "KJFK", arrIcao: "EGLL", durationMin: 410 }),
 ];
 
 const query = (over: Partial<SearchQuery> = {}): SearchQuery => ({
@@ -44,8 +44,9 @@ describe("searchFlights", () => {
   });
 
   it("filters by one or more aircraft models", () => {
-    expect(ids(query({ aircraft: ["Airbus A320"] }))).toEqual(["F3", "F2"]);
-    expect(ids(query({ aircraft: ["Airbus A320", "Boeing 777-300ER"] }))).toEqual(["F3", "F2", "F1"]);
+    expect(ids(query({ aircraft: ["Airbus A320"] }))).toEqual(["F3", "F2", "F4"]);
+    expect(ids(query({ aircraft: ["Airbus A321neo"] }))).toEqual(["F4"]);
+    expect(ids(query({ aircraft: ["Boeing 777-300ER", "Airbus A321neo"] }))).toEqual(["F4", "F1"]);
   });
 
   it("filters by departure airport using ICAO or IATA, case-insensitive", () => {

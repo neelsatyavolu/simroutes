@@ -52,10 +52,10 @@ export function normalizeFlight(raw: unknown, board: Board, seenAt: string): Fli
   if (!Number.isFinite(durationMin) || durationMin <= 0) return null;
 
   return {
-    id: `${compact(f.number)}-${depIcao}-${arrIcao}-${compact(f.aircraft.model)}`,
+    id: `${compact(f.number)}-${depIcao}-${arrIcao}`,
     flightNumber: f.number,
     airline: f.airline,
-    aircraft: f.aircraft.model,
+    aircraft: [f.aircraft.model],
     depIcao,
     arrIcao,
     depLocal: localClock(f.departure.scheduledTime.local),
