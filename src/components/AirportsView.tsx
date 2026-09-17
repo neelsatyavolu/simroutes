@@ -40,6 +40,7 @@ function SceneryResults({ airport }: { airport: Airport }) {
       <p className={styles.muted}>Exact airport matches, with native releases first, then compatible and tested releases. Compatibility labels come from SceneryAddons; they are not quality ratings.</p>
       {!data && !error && <p role="status">Checking MSFS 2024 scenery…</p>}
       {error && <div role="alert"><p>{error}</p><button className={styles.retry} type="button" onClick={() => { setError(""); setAttempt((n) => n + 1); }}>Try again</button></div>}
+      {data?.fallbackUpdatedAt && <p className={styles.notice} role="status">Live updates are temporarily unavailable. Showing saved listings from {new Date(data.fallbackUpdatedAt).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" })}. Check the source for newer releases.</p>}
       {data && data.results.length === 0 && <p className={styles.empty}>No MSFS 2024-compatible listing found for {airport.icao} in this index. Scenery may exist elsewhere or use a different airport code.</p>}
       {data && <div className={styles.sceneryList}>{data.results.map((entry) => (
         <article className={styles.scenery} key={entry.url}>
@@ -53,7 +54,7 @@ function SceneryResults({ airport }: { airport: Airport }) {
           <a href={entry.url} target="_blank" rel="noopener noreferrer">View on SceneryAddons ↗</a>
         </article>
       ))}</div>}
-      <p className={styles.source}><a href={SCENERY_SOURCE} target="_blank" rel="noopener noreferrer">SceneryAddons MSFS 2024 compatibility list ↗</a> · Refreshed hourly</p>
+      <p className={styles.source}><a href={SCENERY_SOURCE} target="_blank" rel="noopener noreferrer">SceneryAddons MSFS 2024 compatibility list ↗</a>{data && !data.fallbackUpdatedAt && " · Live index cached for up to one hour"}</p>
     </section>
   );
 }

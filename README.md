@@ -38,7 +38,7 @@ The free plan has 600 units/month; Pro ($5.35/mo) has 6,000. Flights come from t
 
 The **Airports** tab searches the full airport directory and matches exact airport codes against the [SceneryAddons MSFS 2024 compatibility list](https://sceneryaddons.org/works-with-msfs-2024/), cached for one hour. Native 2024 releases rank first, followed by compatible and tested releases. Within each tier, listings without an Important notice come first. A best compatibility match is highlighted only when its rank is unique; this is not a visual-quality or performance rating. Known-incompatible and unknown entries are excluded. Source notices and listing links remain visible.
 
-The integration reads the public HTML index because the site's JSON API is unavailable. If the site is unavailable or its markup changes, the tab offers a retry and a direct source link. Coverage depends on airport codes appearing in listing titles; a missing match does not mean no scenery exists.
+The integration reads the public HTML index because the site's JSON API is unavailable. If the site rejects a server request, times out or changes its markup, the API falls back to the committed `data/scenery.json` catalog and the tab displays its capture date. Run `npm run data:scenery` from an environment that can reach the source, then commit and deploy the updated snapshot. Failed refreshes leave the saved catalog intact. Coverage depends on airport codes appearing in listing titles; a missing match does not mean no scenery exists.
 
 ## Airport sizes
 

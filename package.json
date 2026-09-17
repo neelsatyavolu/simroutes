@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "data:airports": "tsx scripts/build-airports.ts",
+    "data:scenery": "tsx scripts/build-scenery.ts",
     "data:flights": "tsx --env-file-if-exists=.env.local --env-file-if-exists=.env.ingest scripts/ingest.ts",
     "db:migrate": "tsx --env-file-if-exists=.env.local scripts/migrate.ts"
   },

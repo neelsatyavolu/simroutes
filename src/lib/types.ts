@@ -30,6 +30,7 @@ export interface SceneryResponse {
   results: SceneryMatch[];
   recommendedUrl: string | null;
   sourceUrl: string;
+  fallbackUpdatedAt: string | null;
 }
 
 /** One scheduled flight as seen on a departures board. Stored in data/flights.json. */

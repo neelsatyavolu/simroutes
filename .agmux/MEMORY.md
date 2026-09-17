@@ -6,9 +6,9 @@
 > Do not store secrets (API keys, tokens, passwords).
 
 - **Project**: `930dba21-0349-4fa5-9776-07b31e7d4d7f`
-- **Revision**: 2
-- **Updated**: 2026-09-17T22:03:41.918Z
-- **Active entries**: 2
+- **Revision**: 3
+- **Updated**: 2026-09-17T22:08:29.226Z
+- **Active entries**: 3
 
 ## Decisions
 
@@ -31,3 +31,15 @@
 - **created**: 2026-09-17T18:55:50.994Z
 - **updated**: 2026-09-17T18:55:50.994Z
 - **content**: "User requested Super Large, Large, Medium, Small, Mini and explicitly chose a combination of physical scale and activity. Implemented deterministic estimates using OurAirports category and scheduled service as activity/role proxies plus open runway length/count; these are not passenger-volume measurements. Keep classifications independent of partial weekly schedule coverage. Details and thresholds are in src/lib/airport-sizes.ts and README.md."
+
+## Facts
+
+### "Scenery source rejects production fetches; bundled fallback required"
+
+- **id**: `662a56e2-d7ac-44f5-935f-9030bfc04018`
+- **kind**: fact
+- **source**: agent
+- **authority**: agent
+- **created**: 2026-09-17T22:08:29.226Z
+- **updated**: 2026-09-17T22:08:29.226Z
+- **content**: "2026-09-17 Vercel runtime logs showed KORD scenery requests returning 502, which the original route emits only for non-OK source HTTP responses. Source was accessible from local Node. Added data/scenery.json snapshot fallback for rejected requests, timeouts, and parser failures; UI exposes capture date via fallbackUpdatedAt. Refresh with npm run data:scenery, commit and deploy. Keep snapshot available in production bundle; verified Next route NFT includes it."
