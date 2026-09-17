@@ -8,13 +8,15 @@ import { ForYou } from "./ForYou";
 import { PlannedView } from "./PlannedView";
 import { Logo } from "./Logo";
 import { SearchView } from "./SearchView";
+import { AirportsView } from "@/components/AirportsView";
 import styles from "./AppShell.module.css";
 
-type Tab = "for-you" | "search" | "planned";
+type Tab = "for-you" | "search" | "airports" | "planned";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "for-you", label: "For you" },
   { id: "search", label: "Search" },
+  { id: "airports", label: "Airports" },
   { id: "planned", label: "Planned" },
 ];
 
@@ -92,6 +94,7 @@ export function AppShell() {
       <div role="tabpanel">
         {tab === "for-you" && <ForYou onBrowse={() => setTab("search")} />}
         {tab === "search" && <SearchView options={options} />}
+        {tab === "airports" && <AirportsView />}
         {tab === "planned" && <PlannedView navigraphOutcome={navigraphOutcome} onFindFlights={() => setTab("for-you")} />}
       </div>
 

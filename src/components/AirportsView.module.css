@@ -1,0 +1,246 @@
+.heading {
+  margin: 8px 0 28px;
+}
+
+.kicker, .developer {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--magenta);
+}
+
+.heading h2 {
+  margin: 8px 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.heading > p:last-child, .muted {
+  color: var(--ink-soft);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.search {
+  padding: 20px;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+}
+
+.search label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.search input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--paper);
+}
+
+.search p, .search [role="status"] {
+  font-size: 13px;
+}
+
+.airports {
+  padding: 0;
+  margin: 18px 0 0;
+  list-style: none;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.airports li + li {
+  border-top: 1px solid var(--rule);
+}
+
+.airports button {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 14px 10px;
+  text-align: left;
+  border: 0;
+  border-left: 3px solid transparent;
+  background: transparent;
+  cursor: pointer;
+}
+
+.airports button:hover {
+  background: var(--ifr-soft);
+}
+
+.airports button[aria-pressed="true"] {
+  background: var(--magenta-soft);
+  border-left-color: var(--magenta);
+}
+
+.airports button:focus-visible {
+  outline-offset: -2px;
+}
+
+.airports strong {
+  font-size: 14px;
+}
+
+.airports .muted {
+  font-size: 12px;
+}
+
+.resultCodes, .code {
+  font-family: var(--font-mono), monospace;
+  font-weight: 600;
+}
+
+.resultCodes small {
+  color: var(--ink-soft);
+  font-weight: 400;
+  margin-left: 8px;
+}
+
+.detail {
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid var(--rule);
+  border-top: 4px solid var(--magenta);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.airportHeader, .tags, .sectionHeading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.code {
+  font-size: 32px;
+}
+
+.detail h2 {
+  font-family: var(--font-display), sans-serif;
+  font-size: 30px;
+  line-height: 1.1;
+  margin: 14px 0 6px;
+}
+
+.detail > .muted {
+  margin: 8px 0 22px;
+}
+
+.sectionHeading {
+  justify-content: space-between;
+  border-top: 1px solid var(--rule);
+  padding-top: 22px;
+}
+
+.sectionHeading h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.badge, .best {
+  font-size: 11px;
+  padding: 4px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+
+.best {
+  color: var(--magenta);
+  background: var(--magenta-soft);
+  border-color: var(--magenta);
+}
+
+.sceneryList {
+  display: grid;
+  gap: 16px;
+}
+
+.scenery {
+  padding: 20px;
+  border: 1px solid var(--rule);
+}
+
+.developer {
+  margin: 18px 0 6px;
+}
+
+.scenery h4 {
+  margin: 0 0 16px;
+  font-size: 17px;
+}
+
+.detail a {
+  color: var(--ifr);
+  text-underline-offset: 3px;
+}
+
+.notice {
+  padding-left: 12px;
+  border-left: 3px solid var(--amber);
+  font-size: 13px;
+}
+
+.source {
+  margin: 24px 0 0;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.empty, .placeholder {
+  padding: 28px;
+  border: 1px dashed var(--rule);
+  color: var(--ink-soft);
+}
+
+.placeholder {
+  padding: 48px 32px;
+}
+
+.placeholder h3 {
+  font-family: var(--font-display), sans-serif;
+  font-size: 32px;
+  color: var(--ink);
+  margin: 12px 0;
+}
+
+.placeholder p {
+  max-width: 48ch;
+}
+
+.retry {
+  border: 1px solid var(--ink);
+  padding: 8px 14px;
+  background: var(--paper);
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .airports {
+    max-height: 280px;
+  }
+
+  .detail {
+    padding: 20px;
+  }
+
+}

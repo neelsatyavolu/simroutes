@@ -14,6 +14,24 @@ export interface Airport {
   lon: number;
 }
 
+export interface AirportsResponse {
+  airports: Airport[];
+}
+
+export interface SceneryMatch {
+  title: string;
+  url: string;
+  developer: string;
+  compatibility: "native" | "compatible" | "tested";
+  important: boolean;
+}
+
+export interface SceneryResponse {
+  results: SceneryMatch[];
+  recommendedUrl: string | null;
+  sourceUrl: string;
+}
+
 /** One scheduled flight as seen on a departures board. Stored in data/flights.json. */
 export interface FlightRecord {
   id: string;

@@ -30,7 +30,15 @@ The free plan has 600 units/month; Pro ($5.35/mo) has 6,000. Flights come from t
 ## API
 
 - `GET /api/options`: aircraft types, airlines and airports present in the data
+- `GET /api/airports?q=...`: up to 30 airports matched by ICAO, IATA, name or city, independent of schedule coverage
+- `GET /api/airports/:icao/scenery`: matching MSFS 2024 scenery from the SceneryAddons compatibility index
 - `GET /api/search`: `aircraft` (repeatable), `airline`, `dep`, `arr` (ICAO or IATA), `minDuration`/`maxDuration` (minutes), `depSize`/`arrSize` (`super-large|large|medium|small|mini`), `sort` (`duration|departure|airline`), `limit`
+
+## Airport scenery
+
+The **Airports** tab searches the full airport directory and matches exact airport codes against the [SceneryAddons MSFS 2024 compatibility list](https://sceneryaddons.org/works-with-msfs-2024/), cached for one hour. Native 2024 releases rank first, followed by compatible and tested releases. Within each tier, listings without an Important notice come first. A best compatibility match is highlighted only when its rank is unique; this is not a visual-quality or performance rating. Known-incompatible and unknown entries are excluded. Source notices and listing links remain visible.
+
+The integration reads the public HTML index because the site's JSON API is unavailable. If the site is unavailable or its markup changes, the tab offers a retry and a direct source link. Coverage depends on airport codes appearing in listing titles; a missing match does not mean no scenery exists.
 
 ## Airport sizes
 

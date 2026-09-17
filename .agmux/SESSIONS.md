@@ -5,9 +5,19 @@
 > Each entry has a short summary and a transcript path you can Read for detail.
 
 - **Project**: `930dba21-0349-4fa5-9776-07b31e7d4d7f`
-- **Revision**: 4
-- **Updated**: 2026-09-17T18:55:53.512Z
-- **Sessions**: 4
+- **Revision**: 5
+- **Updated**: 2026-09-17T22:04:02.888Z
+- **Sessions**: 5
+
+## MSFS 2024 airport scenery tab
+
+- **id**: `01a0b15c-da6c-78a3-af5a-bc652f2a0289`
+- **provider**: unknown
+- **status**: idle
+- **updated**: 2026-09-17T22:04:02.888Z
+- **transcript**: _(none resolved)_
+
+Added Airports tab with full-directory ICAO/IATA/name/city search, airport details, exact-code third-party scenery matches from SceneryAddons public MSFS 2024 compatibility index. Source fetched with 1-hour Next cache and 12s timeout; native > compatible > tested, preserve Important notes, no winner for ties, exclude incompatible/unknown and Asobo/Microsoft. Added two API endpoints, CSS responsive layout and scrolling nav, source failure/retry UI, README docs and tests. 132 tests passed, lint and production build passed. Verified public index parser and direct live scenery handler (KJFK 200), airport handler LHR->EGLL. Visual QA unavailable: no connected browser; local HTTP requests timed out through app middleware, while direct handlers succeeded. Stopped temporary local server. No deployment or paid schedule refresh.
 
 ## Five airport-size tiers
 
