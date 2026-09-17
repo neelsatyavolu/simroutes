@@ -16,6 +16,7 @@ const SIZE_BY_TYPE: Record<string, AirportSize> = {
 };
 
 interface OurAirportsRow {
+  ident: string;
   type: string;
   name: string;
   latitude_deg: string;
@@ -32,11 +33,11 @@ async function main() {
   if (!res.ok) throw new Error(`OurAirports download failed: HTTP ${res.status}`);
   const rows: OurAirportsRow[] = parse(await res.text(), { columns: true, skip_empty_lines: true });
 
-  const airports: Airport[] = rows.flatMap((row) => {
+  const entries = rows.flatMap((row) => {
     const size = SIZE_BY_TYPE[row.type];
     const icao = (row.icao_code || row.gps_code).toUpperCase();
     if (!size || !/^[A-Z0-9]{4}$/.test(icao)) return [];
-    return [{
+    const airport: Airport = {
       icao,
       iata: row.iata_code,
       name: row.name,
@@ -45,8 +46,18 @@ async function main() {
       size,
       lat: Number(Number(row.latitude_deg).toFixed(4)),
       lon: Number(Number(row.longitude_deg).toFixed(4)),
-    }];
+    };
+    return [{ airport, ident: row.ident.toUpperCase() }];
   });
+
+  const primary = entries.map((e) => e.airport);
+  const taken = new Set(primary.map((a) => a.icao));
+  // Schedule feeds sometimes still use a superseded ICAO code, which OurAirports keeps as `ident`.
+  // Aliases never shadow an airport's current code.
+  const aliases = entries
+    .filter(({ airport, ident }) => ident !== airport.icao && /^[A-Z]{4}$/.test(ident) && !taken.has(ident))
+    .map(({ airport, ident }) => ({ ...airport, icao: ident }));
+  const airports = [...primary, ...aliases];
 
   await writeFile(AIRPORTS_PATH, JSON.stringify(airports));
   process.stdout.write(`Wrote ${airports.length} airports to ${AIRPORTS_PATH}\n`);
