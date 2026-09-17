@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { EMPTY_FILTERS, type Filters } from "@/lib/filters";
 import { AIRPORT_SIZES, type AirportSize, type OptionsResponse } from "@/lib/types";
+import { AirportInput } from "./AirportInput";
 import { MultiSelect } from "./MultiSelect";
 import styles from "./FilterPanel.module.css";
 
@@ -87,25 +88,21 @@ export function FilterPanel({ filters, options, onChange }: Props) {
 
       <Section n="02" title="Airports">
         <div className={styles.pair}>
-          {(["dep", "arr"] as const).map((key) => (
-            <label key={key} className={styles.field}>
-              <span>{key === "dep" ? "Departure" : "Arrival"}</span>
-              <input
-                list="airport-codes"
-                value={filters[key]}
-                maxLength={4}
-                placeholder={key === "dep" ? "EGLL / LHR" : "Any"}
-                onChange={(e) => set(key, e.target.value.toUpperCase())}
-                className={styles.codeInput}
-              />
-            </label>
-          ))}
+          <AirportInput
+            label="Departure"
+            placeholder="Code or city"
+            value={filters.dep}
+            airports={options?.airports ?? []}
+            onChange={(v) => set("dep", v)}
+          />
+          <AirportInput
+            label="Arrival"
+            placeholder="Any"
+            value={filters.arr}
+            airports={options?.airports ?? []}
+            onChange={(v) => set("arr", v)}
+          />
         </div>
-        <datalist id="airport-codes">
-          {options?.airports.map((a) => (
-            <option key={a.icao} value={a.icao}>{`${a.iata ? `${a.iata} · ` : ""}${a.name}`}</option>
-          ))}
-        </datalist>
       </Section>
 
       <Section n="03" title="Block time">

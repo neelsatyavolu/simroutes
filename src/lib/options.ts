@@ -6,7 +6,7 @@ const byCountDesc = (a: { count: number }, b: { count: number }) => b.count - a.
 export function buildOptions({ flights, airports, updatedAt }: Dataset): OptionsResponse {
   const aircraft = new Map<string, number>();
   const airlines = new Map<string, { name: string; code: string; count: number }>();
-  const usedAirports = new Set<string>();
+  const airportCounts = new Map<string, number>();
 
   for (const f of flights) {
     for (const model of f.aircraft) aircraft.set(model, (aircraft.get(model) ?? 0) + 1);
@@ -15,16 +15,15 @@ export function buildOptions({ flights, airports, updatedAt }: Dataset): Options
       const prev = airlines.get(code);
       airlines.set(code, { name: f.airline.name || code, code, count: (prev?.count ?? 0) + 1 });
     }
-    usedAirports.add(f.depIcao);
-    usedAirports.add(f.arrIcao);
+    for (const icao of [f.depIcao, f.arrIcao]) airportCounts.set(icao, (airportCounts.get(icao) ?? 0) + 1);
   }
 
   return {
     aircraft: [...aircraft].map(([model, count]) => ({ model, count })).sort(byCountDesc),
     airlines: [...airlines.values()].sort(byCountDesc),
-    airports: [...usedAirports].sort().map((icao) => {
+    airports: [...airportCounts].map(([icao, count]) => {
       const a = airports.get(icao);
-      return { icao, iata: a?.iata ?? "", name: a?.name ?? icao, city: a?.city ?? "" };
+      return { icao, iata: a?.iata ?? "", name: a?.name ?? icao, city: a?.city ?? "", country: a?.country ?? "", count };
     }),
     flightCount: flights.length,
     updatedAt,

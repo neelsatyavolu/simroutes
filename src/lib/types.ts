@@ -1,3 +1,5 @@
+import type { AirportOption } from "./airport-search";
+
 export const AIRPORT_SIZES = ["large", "medium", "small"] as const;
 export type AirportSize = (typeof AIRPORT_SIZES)[number];
 
@@ -56,7 +58,7 @@ export interface OptionsResponse {
   aircraft: { model: string; count: number }[];
   airlines: { name: string; code: string; count: number }[];
   /** Airports that appear in the flight data, for autocomplete. */
-  airports: { icao: string; iata: string; name: string; city: string }[];
+  airports: AirportOption[];
   flightCount: number;
   updatedAt: string | null;
 }
