@@ -1,0 +1,40 @@
+name: Refresh schedules
+
+# Pulls the next 7 days of AeroDataBox schedules into the private Vercel Blob store.
+# Weekly so stored data never exceeds AeroDataBox's 7-day retention limit.
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      airports:
+        description: "Optional ICAO codes (space separated); blank = default list"
+        required: false
+        default: ""
+      days:
+        description: "Days to pull (1-7)"
+        required: false
+        default: "7"
+
+concurrency:
+  group: refresh-schedules
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Pull schedules
+        env:
+          AERODATABOX_RAPIDAPI_KEY: ${{ secrets.AERODATABOX_RAPIDAPI_KEY }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          AIRPORTS: ${{ inputs.airports }}
+          DAYS: ${{ inputs.days || '7' }}
+        run: npx tsx scripts/ingest.ts $AIRPORTS --days "$DAYS"

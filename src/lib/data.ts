@@ -1,49 +1,40 @@
-import { readFile, stat } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
-import type { Airport, FlightRecord } from "./types";
-
-export interface FlightsFile {
-  updatedAt: string | null;
-  flights: FlightRecord[];
-}
+import { MAX_RETENTION_MS, readFlightsFile, type FlightsFile } from "./flight-store";
+import { pruneExpired } from "./normalize";
+import type { Airport } from "./types";
 
 export interface Dataset extends FlightsFile {
   airports: Map<string, Airport>;
 }
 
-const DATA_DIR = path.join(process.cwd(), "data");
-export const FLIGHTS_PATH = process.env.FLIGHTS_FILE ?? path.join(DATA_DIR, "flights.json");
-export const AIRPORTS_PATH = path.join(DATA_DIR, "airports.json");
+export const AIRPORTS_PATH = path.join(process.cwd(), "data", "airports.json");
 
-let cache: { key: string; dataset: Dataset } | null = null;
+/** How long a server instance reuses flight data before re-reading storage. */
+const FLIGHTS_TTL_MS = 10 * 60_000;
 
-async function mtime(file: string): Promise<number> {
-  try {
-    return (await stat(file)).mtimeMs;
-  } catch {
-    return 0;
-  }
+let airportsPromise: Promise<Map<string, Airport>> | null = null;
+let flightsCache: { loadedAt: number; file: FlightsFile } | null = null;
+
+function loadAirports(): Promise<Map<string, Airport>> {
+  airportsPromise ??= readFile(AIRPORTS_PATH, "utf8")
+    .then((text) => new Map((JSON.parse(text) as Airport[]).map((a) => [a.icao, a])))
+    .catch((error) => {
+      airportsPromise = null;
+      throw new Error(`Failed to read ${AIRPORTS_PATH}: ${(error as Error).message}`);
+    });
+  return airportsPromise;
 }
 
-async function readJson<T>(file: string, fallback: T): Promise<T> {
-  try {
-    return JSON.parse(await readFile(file, "utf8")) as T;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return fallback;
-    throw new Error(`Failed to read data file ${file}: ${(error as Error).message}`);
-  }
+async function loadFlights(): Promise<FlightsFile> {
+  if (flightsCache && Date.now() - flightsCache.loadedAt < FLIGHTS_TTL_MS) return flightsCache.file;
+  const file = await readFlightsFile();
+  flightsCache = { loadedAt: Date.now(), file };
+  return file;
 }
 
-/** Loads the dataset, re-reading from disk only when the files change (e.g. after an ingest run). */
 export async function loadDataset(): Promise<Dataset> {
-  const key = `${await mtime(FLIGHTS_PATH)}:${await mtime(AIRPORTS_PATH)}`;
-  if (cache?.key === key) return cache.dataset;
-
-  const [flightsFile, airports] = await Promise.all([
-    readJson<FlightsFile>(FLIGHTS_PATH, { updatedAt: null, flights: [] }),
-    readJson<Airport[]>(AIRPORTS_PATH, []),
-  ]);
-  const dataset: Dataset = { ...flightsFile, airports: new Map(airports.map((a) => [a.icao, a])) };
-  cache = { key, dataset };
-  return dataset;
+  const [airports, file] = await Promise.all([loadAirports(), loadFlights()]);
+  // Never serve records past the retention limit, even if a scheduled refresh was missed.
+  return { ...file, flights: pruneExpired(file.flights, new Date(), MAX_RETENTION_MS), airports };
 }
