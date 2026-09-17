@@ -61,7 +61,7 @@ export interface LogbookFlightView {
   aircraft: string | null;
   blockMinutes: number | null;
   flownAt: string | null;
-  source: "csv" | "volanta";
+  source: "csv" | "volanta" | "plan";
 }
 
 export interface LogbookResponse {
@@ -91,6 +91,15 @@ export interface SuggestionsResponse {
   } | null;
   continueFrom: (SuggestionRowView & { from: string }) | null;
   discover: SuggestionRowView | null;
+}
+
+export type { Plan } from "./planner/repo";
+export type { OfpSummary } from "./planner/simbrief";
+
+export interface NavigraphStatus {
+  /** False until Navigraph client credentials are configured. */
+  configured: boolean;
+  alias: string | null;
 }
 
 export interface OptionsResponse {

@@ -1,6 +1,6 @@
-import { neon } from "@neondatabase/serverless";
+import { db } from "../db";
 
-export type LogbookSource = "csv" | "volanta";
+export type LogbookSource = "csv" | "volanta" | "plan";
 
 export interface StoredLogbookFlight {
   id: string;
@@ -22,16 +22,6 @@ export interface NewLogbookFlight {
 }
 
 export const MAX_LOGBOOK_FLIGHTS = 10_000;
-
-let client: ReturnType<typeof neon> | null = null;
-function db() {
-  if (!client) {
-    const url = process.env.DATABASE_URL;
-    if (!url) throw new Error("DATABASE_URL is not configured");
-    client = neon(url);
-  }
-  return client;
-}
 
 /** Same external id, or same route + aircraft + date, counts as the same flight. */
 export const dedupeKey = (source: LogbookSource, f: NewLogbookFlight) =>

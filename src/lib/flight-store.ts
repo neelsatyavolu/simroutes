@@ -12,7 +12,7 @@ export interface FlightsFile {
 export const MAX_RETENTION_MS = 7 * 24 * 3600_000;
 
 const BLOB_PATHNAME = "flights.json";
-const LOCAL_PATH = process.env.FLIGHTS_FILE ?? path.join(process.cwd(), "data", "flights.json");
+const LOCAL_PATH = path.join(process.cwd(), "data", "flights.json");
 const EMPTY: FlightsFile = { updatedAt: null, flights: [] };
 
 /** Uses the private Blob store when a token is configured, otherwise a local (gitignored) file. */

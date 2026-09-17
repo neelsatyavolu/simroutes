@@ -6,6 +6,7 @@ import { formatDuration } from "@/lib/filters";
 import { getJson } from "@/lib/http";
 import type { LogbookFlightView, LogbookResponse, SuggestionRowView, SuggestionsResponse } from "@/lib/types";
 import { FlightStrip } from "./FlightStrip";
+import { PlanButton } from "./PlanButton";
 import { LogbookPanel } from "./LogbookPanel";
 import shared from "./shared.module.css";
 import styles from "./ForYou.module.css";
@@ -31,7 +32,7 @@ function Row({ title, subtitle, row, emptyText }: { title: string; subtitle?: st
         <p className={styles.rowEmpty}>{emptyText}</p>
       ) : (
         <ol className={shared.list}>
-          {row.results.map((f, i) => <FlightStrip key={f.id} flight={f} index={i} />)}
+          {row.results.map((f, i) => <FlightStrip key={f.id} flight={f} index={i} action={<PlanButton flight={f} />} />)}
         </ol>
       )}
     </section>

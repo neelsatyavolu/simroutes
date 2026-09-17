@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { formatDuration } from "@/lib/filters";
 import type { Airport, FlightResult } from "@/lib/types";
 import styles from "./FlightStrip.module.css";
@@ -24,9 +25,9 @@ function AirportCell({ icao, airport, time, side }: { icao: string; airport: Air
   );
 }
 
-export function FlightStrip({ flight, index }: { flight: FlightResult; index: number }) {
+export function FlightStrip({ flight, index, action }: { flight: FlightResult; index: number; action?: ReactNode }) {
   return (
-    <li className={styles.strip} style={{ animationDelay: `${Math.min(index, 20) * 25}ms` }}>
+    <li className={styles.strip} data-has-action={action ? "true" : undefined} style={{ animationDelay: `${Math.min(index, 20) * 25}ms` }}>
       <div className={styles.ident}>
         <span className={styles.flightNo}>{flight.flightNumber}</span>
         <span className={styles.airline}>{flight.airline.name}</span>
@@ -43,6 +44,7 @@ export function FlightStrip({ flight, index }: { flight: FlightResult; index: nu
         <span className={styles.blockLabel}>Block</span>
         <span className={styles.blockTime}>{formatDuration(flight.durationMin)}</span>
       </div>
+      {action && <div className={styles.action}>{action}</div>}
     </li>
   );
 }

@@ -6,6 +6,7 @@ import { getJson } from "@/lib/http";
 import type { OptionsResponse, SearchQuery, SearchResponse } from "@/lib/types";
 import { FilterPanel } from "./FilterPanel";
 import { FlightStrip } from "./FlightStrip";
+import { PlanButton } from "./PlanButton";
 import shared from "./shared.module.css";
 import styles from "./SearchView.module.css";
 
@@ -83,7 +84,7 @@ export function SearchView({ options }: { options: OptionsResponse | null }) {
           </div>
         ) : status.kind === "ready" ? (
           <ol className={shared.list}>
-            {status.data.results.map((f, i) => <FlightStrip key={f.id} flight={f} index={i} />)}
+            {status.data.results.map((f, i) => <FlightStrip key={f.id} flight={f} index={i} action={<PlanButton flight={f} />} />)}
           </ol>
         ) : null}
       </main>

@@ -5,23 +5,38 @@ import { useEffect, useState } from "react";
 import { getJson } from "@/lib/http";
 import type { OptionsResponse } from "@/lib/types";
 import { ForYou } from "./ForYou";
+import { PlannedView } from "./PlannedView";
 import { Logo } from "./Logo";
 import { SearchView } from "./SearchView";
 import styles from "./AppShell.module.css";
 
-type Tab = "for-you" | "search";
+type Tab = "for-you" | "search" | "planned";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "for-you", label: "For you" },
   { id: "search", label: "Search" },
+  { id: "planned", label: "Planned" },
 ];
+
+const isTab = (value: string | null): value is Tab => TABS.some((t) => t.id === value);
 
 export function AppShell() {
   const [tab, setTab] = useState<Tab>("for-you");
   const [options, setOptions] = useState<OptionsResponse | null>(null);
+  const [navigraphOutcome, setNavigraphOutcome] = useState<string | null>(null);
 
   useEffect(() => {
     getJson<OptionsResponse>("/api/options").then(setOptions).catch(() => setOptions(null));
+    // Deep links such as the Navigraph callback: /?tab=planned&navigraph=connected
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("tab");
+    if (isTab(requested) || params.has("navigraph")) {
+      queueMicrotask(() => {
+        if (isTab(requested)) setTab(requested);
+        setNavigraphOutcome(params.get("navigraph"));
+      });
+      window.history.replaceState(null, "", window.location.pathname);
+    }
   }, []);
 
   const updated = options?.updatedAt
@@ -75,7 +90,9 @@ export function AppShell() {
       </nav>
 
       <div role="tabpanel">
-        {tab === "for-you" ? <ForYou onBrowse={() => setTab("search")} /> : <SearchView options={options} />}
+        {tab === "for-you" && <ForYou onBrowse={() => setTab("search")} />}
+        {tab === "search" && <SearchView options={options} />}
+        {tab === "planned" && <PlannedView navigraphOutcome={navigraphOutcome} onFindFlights={() => setTab("for-you")} />}
       </div>
 
       <footer className={styles.footer}>

@@ -12,6 +12,16 @@
   transition: transform 140ms ease, border-color 140ms ease;
 }
 
+.strip[data-has-action="true"] {
+  grid-template-columns: 150px minmax(110px, 1fr) minmax(140px, 1.3fr) 44px minmax(140px, 1.3fr) 92px 84px;
+}
+
+.action {
+  display: grid;
+  place-items: center;
+  padding: 8px !important;
+}
+
 .strip:hover {
   transform: translateX(4px);
   border-left-color: var(--magenta);
@@ -153,6 +163,15 @@
       "type type type"
       "dep arrow arr";
   }
+  .strip[data-has-action="true"] {
+    grid-template-columns: 1fr 32px 1fr;
+    grid-template-areas:
+      "ident ident block"
+      "type type type"
+      "dep arrow arr"
+      "action action action";
+  }
+  .action { grid-area: action; border-left: 0 !important; border-top: 1px dashed var(--rule); justify-items: stretch; }
   .ident { grid-area: ident; }
   .block { grid-area: block; }
   .type { grid-area: type; border-left: 0 !important; border-top: 1px dashed var(--rule); padding-block: 6px; }
