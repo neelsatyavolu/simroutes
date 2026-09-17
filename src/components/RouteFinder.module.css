@@ -24,6 +24,19 @@
   color: var(--magenta);
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.6vw, 20px);
+}
+
+.logo {
+  flex: none;
+  width: clamp(48px, 7.2vw, 92px);
+  height: clamp(48px, 7.2vw, 92px);
+  filter: drop-shadow(0 6px 14px rgba(21, 34, 56, 0.28));
+}
+
 .title {
   margin: 0;
   font-family: var(--font-display), sans-serif;

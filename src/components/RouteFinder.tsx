@@ -5,6 +5,7 @@ import { EMPTY_FILTERS, toSearchParams, type Filters } from "@/lib/filters";
 import type { OptionsResponse, SearchQuery, SearchResponse } from "@/lib/types";
 import { FilterPanel } from "./FilterPanel";
 import { FlightStrip } from "./FlightStrip";
+import { Logo } from "./Logo";
 import styles from "./RouteFinder.module.css";
 
 const DEBOUNCE_MS = 250;
@@ -61,9 +62,12 @@ export function RouteFinder() {
       <header className={styles.masthead}>
         <div>
           <p className={styles.kicker}>Real-world schedules · for your sim</p>
-          <h1 className={styles.title}>
-            Sim<span>Routes</span>
-          </h1>
+          <div className={styles.brand}>
+            <Logo className={styles.logo} />
+            <h1 className={styles.title}>
+              Sim<span>Routes</span>
+            </h1>
+          </div>
         </div>
         <dl className={styles.stats}>
           <div><dt>Flights</dt><dd>{options ? options.flightCount.toLocaleString() : "—"}</dd></div>
