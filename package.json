@@ -9,9 +9,12 @@
     "lint": "eslint",
     "test": "vitest run",
     "data:airports": "tsx scripts/build-airports.ts",
-    "data:flights": "tsx --env-file-if-exists=.env.local --env-file-if-exists=.env.ingest scripts/ingest.ts"
+    "data:flights": "tsx --env-file-if-exists=.env.local --env-file-if-exists=.env.ingest scripts/ingest.ts",
+    "db:migrate": "tsx --env-file-if-exists=.env.local scripts/migrate.ts"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.9.4",
+    "@neondatabase/serverless": "^1.1.0",
     "@vercel/blob": "^2.8.0",
     "csv-parse": "^7.0.2",
     "next": "16.3.5",

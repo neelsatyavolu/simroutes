@@ -16,7 +16,7 @@ const FLIGHTS_TTL_MS = 10 * 60_000;
 let airportsPromise: Promise<Map<string, Airport>> | null = null;
 let flightsCache: { loadedAt: number; file: FlightsFile } | null = null;
 
-function loadAirports(): Promise<Map<string, Airport>> {
+export function loadAirports(): Promise<Map<string, Airport>> {
   airportsPromise ??= readFile(AIRPORTS_PATH, "utf8")
     .then((text) => new Map((JSON.parse(text) as Airport[]).map((a) => [a.icao, a])))
     .catch((error) => {

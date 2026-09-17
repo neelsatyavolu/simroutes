@@ -54,6 +54,45 @@ export interface SearchResponse {
   results: FlightResult[];
 }
 
+export interface LogbookFlightView {
+  id: string;
+  depIcao: string;
+  arrIcao: string;
+  aircraft: string | null;
+  blockMinutes: number | null;
+  flownAt: string | null;
+  source: "csv" | "volanta";
+}
+
+export interface LogbookResponse {
+  flights: LogbookFlightView[];
+}
+
+export interface ImportResponse {
+  added: number;
+  /** Rows that were read but already in the logbook. */
+  duplicates: number;
+  errors: string[];
+}
+
+export interface SuggestionRowView {
+  results: FlightResult[];
+  relaxed: ("aircraft" | "duration")[];
+}
+
+export interface SuggestionsResponse {
+  /** Null when the logbook is empty. */
+  profile: {
+    aircraft: string[];
+    duration: { min: number; max: number; median: number } | null;
+    lastArrival: Airport | { icao: string } | null;
+    flightCount: number;
+    visitedCount: number;
+  } | null;
+  continueFrom: (SuggestionRowView & { from: string }) | null;
+  discover: SuggestionRowView | null;
+}
+
 export interface OptionsResponse {
   aircraft: { model: string; count: number }[];
   airlines: { name: string; code: string; count: number }[];
