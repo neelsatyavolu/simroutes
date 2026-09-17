@@ -30,7 +30,21 @@ The free plan has 600 units/month; Pro ($5.35/mo) has 6,000. Flights come from t
 ## API
 
 - `GET /api/options`: aircraft types, airlines and airports present in the data
-- `GET /api/search`: `aircraft` (repeatable), `airline`, `dep`, `arr` (ICAO or IATA), `minDuration`/`maxDuration` (minutes), `depSize`/`arrSize` (`large|medium|small`), `sort` (`duration|departure|airline`), `limit`
+- `GET /api/search`: `aircraft` (repeatable), `airline`, `dep`, `arr` (ICAO or IATA), `minDuration`/`maxDuration` (minutes), `depSize`/`arrSize` (`super-large|large|medium|small|mini`), `sort` (`duration|departure|airline`), `limit`
+
+## Airport sizes
+
+Five SimRoutes tiers combine airport role and scheduled airline service with runway infrastructure from [OurAirports](https://ourairports.com/help/data-dictionary.html). These are estimates, not passenger-volume rankings or aircraft suitability ratings. Weekly schedule coverage never changes an airport's size.
+
+- **Super Large:** OurAirports large airport with scheduled service and at least two open paved runways of 9,000 ft or longer.
+- **Large:** Other OurAirports large airports.
+- **Medium:** Regional airports, or smaller airports with scheduled service and a runway of at least 5,000 ft.
+- **Small:** Other local airports; non-large airports whose longest known open runway is 3,000–4,999 ft.
+- **Mini:** Non-large airports whose longest known open runway is under 3,000 ft.
+
+Short-runway rules take precedence over regional status. Closed runways, helipads and water surfaces are excluded. Missing runway lengths fall back to the source category rather than implying Mini. `npm run data:airports` rebuilds all classifications from both airport and runway CSVs, preserving historical ICAO aliases. No paid schedule requests are involved.
+
+Departure and arrival tiers can each be multi-selected; **Any size** clears that end's restriction and includes airports with unknown details. Available routes still depend on schedule coverage.
 
 ## Tests
 

@@ -39,6 +39,17 @@ const query = (over: Partial<SearchQuery> = {}): SearchQuery => ({
 const ids = (q: SearchQuery) => searchFlights(flights, airports, q).results.map((r) => r.id);
 
 describe("searchFlights", () => {
+  it("matches full or partial flight numbers ignoring case and whitespace", () => {
+    const records = [flight("BA123", {}), flight("BA 124", {}), flight("LM123", {})];
+    const find = (flightNumber: string) => searchFlights(records, airports, query({ flightNumber })).results.map((f) => f.id);
+    expect(find(" ba 123 ")).toEqual(["BA123"]);
+    expect(find("123")).toEqual(["BA123", "LM123"]);
+    expect(find("ba12")).toEqual(["BA123", "BA 124"]);
+    expect(find("ZZ999")).toEqual([]);
+    expect(find("   ")).toHaveLength(3);
+    expect(ids(query({ flightNumber: "F2", dep: "EGJJ" }))).toEqual([]);
+  });
+
   it("returns everything sorted by duration with no filters", () => {
     expect(ids(query())).toEqual(["F3", "F2", "F4", "F1"]);
   });
@@ -89,6 +100,15 @@ describe("searchFlights", () => {
 });
 
 describe("parseSearchParams", () => {
+  it("normalizes flight numbers and omits blank values", () => {
+    expect(parseSearchParams(new URLSearchParams({ flightNumber: " ba 123 " }))).toEqual({
+      ok: true, query: query({ flightNumber: "BA123" }),
+    });
+    expect(parseSearchParams(new URLSearchParams({ flightNumber: "   " }))).toEqual({
+      ok: true, query: query(),
+    });
+  });
+
   it("parses repeated and comma-separated values", () => {
     const p = new URLSearchParams("aircraft=Airbus A320&aircraft=Boeing 737-800&depSize=large,medium&minDuration=30&maxDuration=120&dep=lhr");
     expect(parseSearchParams(p)).toEqual({

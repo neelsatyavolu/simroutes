@@ -5,15 +5,13 @@
 import { writeFile } from "node:fs/promises";
 import { parse } from "csv-parse/sync";
 import { AIRPORTS_PATH } from "../src/lib/data";
-import type { Airport, AirportSize } from "../src/lib/types";
+import type { Airport } from "@/lib/types";
+import { classifyAirportSize, type AirportRunway } from "@/lib/airport-sizes";
 
 const SOURCE_URL = "https://davidmegginson.github.io/ourairports-data/airports.csv";
 
-const SIZE_BY_TYPE: Record<string, AirportSize> = {
-  large_airport: "large",
-  medium_airport: "medium",
-  small_airport: "small",
-};
+const RUNWAYS_URL = "https://davidmegginson.github.io/ourairports-data/runways.csv";
+const AIRPORT_TYPES = new Set(["large_airport", "medium_airport", "small_airport"]);
 
 interface OurAirportsRow {
   ident: string;
@@ -26,17 +24,28 @@ interface OurAirportsRow {
   icao_code: string;
   iata_code: string;
   gps_code: string;
+  scheduled_service: string;
 }
 
 async function main() {
-  const res = await fetch(SOURCE_URL);
-  if (!res.ok) throw new Error(`OurAirports download failed: HTTP ${res.status}`);
-  const rows: OurAirportsRow[] = parse(await res.text(), { columns: true, skip_empty_lines: true });
+  const [airportCsv, runwayCsv] = await Promise.all([SOURCE_URL, RUNWAYS_URL].map(async (url) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`OurAirports download failed: HTTP ${res.status} (${url})`);
+    return res.text();
+  }));
+  const rows: OurAirportsRow[] = parse(airportCsv, { columns: true, skip_empty_lines: true });
+  const runways: (AirportRunway & { airport_ident: string })[] = parse(runwayCsv, { columns: true, skip_empty_lines: true });
+  const runwaysByAirport = new Map<string, AirportRunway[]>();
+  for (const runway of runways) {
+    const group = runwaysByAirport.get(runway.airport_ident) ?? [];
+    group.push(runway);
+    runwaysByAirport.set(runway.airport_ident, group);
+  }
 
   const entries = rows.flatMap((row) => {
-    const size = SIZE_BY_TYPE[row.type];
     const icao = (row.icao_code || row.gps_code).toUpperCase();
-    if (!size || !/^[A-Z0-9]{4}$/.test(icao)) return [];
+    if (!AIRPORT_TYPES.has(row.type) || !/^[A-Z0-9]{4}$/.test(icao)) return [];
+    const size = classifyAirportSize(row.type, row.scheduled_service === "yes", runwaysByAirport.get(row.ident) ?? []);
     const airport: Airport = {
       icao,
       iata: row.iata_code,

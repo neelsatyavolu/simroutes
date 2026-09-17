@@ -1,9 +1,8 @@
 import type { ReactNode } from "react";
 import { formatDuration } from "@/lib/filters";
 import type { Airport, FlightResult } from "@/lib/types";
+import { AIRPORT_SIZE_INFO } from "@/lib/airport-sizes";
 import styles from "./FlightStrip.module.css";
-
-const SIZE_LABEL: Record<Airport["size"], string> = { large: "L", medium: "M", small: "S" };
 
 function AirportCell({ icao, airport, time, side }: { icao: string; airport: Airport | null; time: string; side: "dep" | "arr" }) {
   return (
@@ -12,8 +11,8 @@ function AirportCell({ icao, airport, time, side }: { icao: string; airport: Air
         <span className={styles.icao}>{icao}</span>
         {airport?.iata && <span className={styles.iata}>{airport.iata}</span>}
         {airport && (
-          <span className={styles.size} data-size={airport.size} title={`${airport.size} airport`}>
-            {SIZE_LABEL[airport.size]}
+          <span className={styles.size} data-size={airport.size} title={`${AIRPORT_SIZE_INFO[airport.size].label} airport · ${AIRPORT_SIZE_INFO[airport.size].hint}`} aria-label={`${AIRPORT_SIZE_INFO[airport.size].label} airport`}>
+            {AIRPORT_SIZE_INFO[airport.size].badge}
           </span>
         )}
       </div>

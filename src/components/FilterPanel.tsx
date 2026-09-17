@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { EMPTY_FILTERS, type Filters } from "@/lib/filters";
 import { AIRPORT_SIZES, type AirportSize, type OptionsResponse } from "@/lib/types";
+import { AIRPORT_SIZE_INFO } from "@/lib/airport-sizes";
 import { AirportInput } from "./AirportInput";
 import { MultiSelect } from "./MultiSelect";
 import styles from "./FilterPanel.module.css";
@@ -24,21 +25,34 @@ function SizeToggle({ label, value, onChange }: { label: string; value: AirportS
   return (
     <fieldset className={styles.sizes}>
       <legend>{label}</legend>
-      {AIRPORT_SIZES.map((size) => {
-        const on = value.includes(size);
-        return (
-          <button
-            key={size}
-            type="button"
-            aria-pressed={on}
-            className={styles.toggle}
-            data-size={size}
-            onClick={() => onChange(on ? value.filter((s) => s !== size) : [...value, size])}
-          >
-            {size}
-          </button>
-        );
-      })}
+      <div className={styles.sizeGrid}>
+        <button
+          type="button"
+          aria-pressed={value.length === 0}
+          className={styles.toggle}
+          onClick={() => onChange([])}
+        >
+          <span className={styles.sizeName}>Any size</span>
+          <span className={styles.sizeHint}>No restriction</span>
+        </button>
+        {AIRPORT_SIZES.map((size) => {
+          const on = value.includes(size);
+          const info = AIRPORT_SIZE_INFO[size];
+          return (
+            <button
+              key={size}
+              type="button"
+              aria-pressed={on}
+              className={styles.toggle}
+              data-size={size}
+              onClick={() => onChange(on ? value.filter((s) => s !== size) : [...value, size])}
+            >
+              <span className={styles.sizeName}>{info.label}<span aria-hidden="true">{on ? "✓" : "+"}</span></span>
+              <span className={styles.sizeHint}>{info.hint}</span>
+            </button>
+          );
+        })}
+      </div>
     </fieldset>
   );
 }
@@ -143,8 +157,15 @@ export function FilterPanel({ filters, options, onChange }: Props) {
       </Section>
 
       <Section n="04" title="Airport size">
+        <p className={styles.sizeIntro}>Choose one or more sizes for each end.</p>
         <SizeToggle label="Departure" value={filters.depSizes} onChange={(v) => set("depSizes", v)} />
         <SizeToggle label="Arrival" value={filters.arrSizes} onChange={(v) => set("arrSizes", v)} />
+        <details className={styles.sizeGuide}>
+          <summary>How sizes work</summary>
+          <p>Estimated from airport category, scheduled airline service and runway infrastructure—not live traffic counts.</p>
+          <p>Super Large airports have scheduled service and at least two paved runways of 9,000 ft (2,743 m). Large covers other major airports. Medium covers regional airports and smaller airline airports with runways of at least 5,000 ft (1,524 m).</p>
+          <p>Below the major-airport tier, runways under 5,000 ft indicate Small; under 3,000 ft (914 m), Mini. Missing runway data falls back to the airport category. Results depend on available schedules.</p>
+        </details>
       </Section>
 
       <Section n="05" title="Airline">
@@ -155,6 +176,21 @@ export function FilterPanel({ filters, options, onChange }: Props) {
           selected={filters.airlines}
           onChange={(v) => set("airlines", v)}
         />
+      </Section>
+
+      <Section n="06" title="Flight number">
+        <label className={styles.field}>
+          <span>Full or partial number</span>
+          <input
+            type="text"
+            value={filters.flightNumber}
+            placeholder="e.g. BA123 or 123"
+            onChange={(e) => set("flightNumber", e.target.value)}
+            className={styles.codeInput}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </label>
       </Section>
     </form>
   );

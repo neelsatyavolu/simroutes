@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ForYou } from "@/components/ForYou";
 import { EMPTY_FILTERS, toSearchParams, type Filters } from "@/lib/filters";
 import { getJson } from "@/lib/http";
 import type { OptionsResponse, SearchQuery, SearchResponse } from "@/lib/types";
@@ -22,9 +23,16 @@ const SORTS: { value: SearchQuery["sort"]; label: string }[] = [
 
 export function SearchView({ options }: { options: OptionsResponse | null }) {
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [showForYou, setShowForYou] = useState(true);
   const [status, setStatus] = useState<Status>({ kind: "loading" });
 
+  function changeFilters(next: Filters) {
+    setShowForYou(false);
+    setFilters(next);
+  }
+
   useEffect(() => {
+    if (showForYou) return;
     const controller = new AbortController();
     const timer = setTimeout(() => {
       setStatus((s) => (s.kind === "ready" ? s : { kind: "loading" }));
@@ -38,29 +46,35 @@ export function SearchView({ options }: { options: OptionsResponse | null }) {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [filters]);
+  }, [filters, showForYou]);
 
   const noData = options !== null && options.flightCount === 0;
 
   return (
     <div className={styles.layout}>
       <aside>
-        <FilterPanel filters={filters} options={options} onChange={setFilters} />
+        <FilterPanel filters={filters} options={options} onChange={changeFilters} />
       </aside>
 
       <main className={styles.results} aria-live="polite">
         <div className={styles.toolbar}>
           <p className={styles.count}>
-            {status.kind === "ready" ? (
+            {showForYou ? "Flights picked for you" : status.kind === "ready" ? (
               <>
                 <strong>{status.data.total.toLocaleString()}</strong> {status.data.total === 1 ? "flight" : "flights"}
                 {status.data.total > status.data.results.length && <span> · showing {status.data.results.length}</span>}
               </>
             ) : status.kind === "loading" ? "Searching…" : ""}
           </p>
-          <div className={styles.sort} role="group" aria-label="Sort by">
+          <div className={styles.sort} role="group" aria-label="Flight list and sort">
+            <button type="button" aria-pressed={showForYou} onClick={() => {
+              setFilters(EMPTY_FILTERS);
+              setShowForYou(true);
+            }}>
+              For you
+            </button>
             {SORTS.map((s) => (
-              <button key={s.value} type="button" aria-pressed={filters.sort === s.value} onClick={() => setFilters({ ...filters, sort: s.value })}>
+              <button key={s.value} type="button" aria-pressed={!showForYou && filters.sort === s.value} onClick={() => changeFilters({ ...filters, sort: s.value })}>
                 {s.label}
               </button>
             ))}
@@ -72,6 +86,8 @@ export function SearchView({ options }: { options: OptionsResponse | null }) {
             <h2>No schedule data yet</h2>
             <p>Schedules refresh weekly. Check back soon.</p>
           </div>
+        ) : showForYou ? (
+          <ForYou embedded onBrowse={() => setShowForYou(false)} />
         ) : status.kind === "error" ? (
           <div className={shared.empty} role="alert">
             <h2>Something went wrong</h2>
@@ -80,7 +96,7 @@ export function SearchView({ options }: { options: OptionsResponse | null }) {
         ) : status.kind === "ready" && status.data.total === 0 ? (
           <div className={shared.empty}>
             <h2>No routes match</h2>
-            <p>Widen the block time or remove an aircraft or airport filter.</p>
+            <p>Check the flight number, widen the block time, or remove a filter.</p>
           </div>
         ) : status.kind === "ready" ? (
           <ol className={shared.list}>

@@ -3,6 +3,13 @@ import { EMPTY_FILTERS, toSearchParams } from "./filters";
 import { parseSearchParams } from "./search";
 
 describe("toSearchParams", () => {
+  it("serializes flight numbers and omits whitespace-only input", () => {
+    const params = toSearchParams({ ...EMPTY_FILTERS, flightNumber: " ba 123 " });
+    expect(params.get("flightNumber")).toBe("ba 123");
+    expect(parseSearchParams(params)).toMatchObject({ ok: true, query: { flightNumber: "BA123" } });
+    expect(toSearchParams({ ...EMPTY_FILTERS, flightNumber: "   " }).has("flightNumber")).toBe(false);
+  });
+
   it("omits empty filters", () => {
     expect(toSearchParams(EMPTY_FILTERS).toString()).toBe("sort=duration");
   });

@@ -58,7 +58,7 @@ function SignedOut({ onBrowse }: { onBrowse: () => void }) {
   );
 }
 
-export function ForYou({ onBrowse }: { onBrowse: () => void }) {
+export function ForYou({ onBrowse, embedded = false }: { onBrowse: () => void; embedded?: boolean }) {
   const { isLoaded, isSignedIn } = useAuth();
   const [suggestions, setSuggestions] = useState<SuggestionsResponse | null>(null);
   const [logbook, setLogbook] = useState<LogbookFlightView[] | null>(null);
@@ -86,8 +86,8 @@ export function ForYou({ onBrowse }: { onBrowse: () => void }) {
   const lastLabel = last ? ("name" in last ? `${last.city || last.name} (${last.icao})` : last.icao) : "";
 
   return (
-    <div className={styles.layout}>
-      <main className={styles.main} aria-live="polite">
+    <div className={embedded ? undefined : styles.layout}>
+      <section className={styles.main} aria-live="polite">
         {error ? (
           <div className={shared.empty} role="alert">
             <h2>Couldn&apos;t load suggestions</h2>
@@ -98,7 +98,7 @@ export function ForYou({ onBrowse }: { onBrowse: () => void }) {
         ) : !profile ? (
           <div className={shared.empty}>
             <h2>Import your flights to start</h2>
-            <p>Add your Volanta username or upload a logbook CSV. Suggestions appear here straight away.</p>
+            <p>{embedded ? 'Open the “For you” tab to add your Volanta username or upload a logbook CSV.' : "Add your Volanta username or upload a logbook CSV. Suggestions appear here straight away."}</p>
           </div>
         ) : (
           <>
@@ -126,10 +126,10 @@ export function ForYou({ onBrowse }: { onBrowse: () => void }) {
             )}
           </>
         )}
-      </main>
-      <aside>
+      </section>
+      {!embedded && <aside>
         <LogbookPanel flights={logbook} onChanged={load} />
-      </aside>
+      </aside>}
     </div>
   );
 }

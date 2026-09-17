@@ -106,8 +106,10 @@
 }
 
 .size[data-size="large"] { color: var(--ifr); }
+.size[data-size="super-large"] { color: var(--ifr); font-weight: 800; }
 .size[data-size="medium"] { color: var(--magenta); }
 .size[data-size="small"] { color: var(--amber); }
+.size[data-size="mini"] { color: var(--ink-soft); }
 
 .name {
   font-size: 12px;
