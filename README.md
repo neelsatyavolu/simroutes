@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SimRoutes
 
-## Getting Started
+Find real-world routes for your flight sim by aircraft type, block time, departure/arrival airport, airport size and airline.
 
-First, run the development server:
+## Setup
 
 ```bash
+npm install
+npm run data:airports   # OurAirports → data/airports.json (free, no key)
+cp .env.example .env.local   # add your AeroDataBox RapidAPI key
+npm run data:flights    # real scheduled departures → data/flights.json
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Schedule data (AeroDataBox)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Sign up at https://rapidapi.com/aedbx-aedbx/api/aerodatabox and subscribe to the **Basic (free)** plan.
+2. Put the key in `.env.local` as `AERODATABOX_RAPIDAPI_KEY`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`npm run data:flights` pulls the next 12h of departures from 25 major hubs and merges them into `data/flights.json` (re-runs update existing flights and add new ones).
 
-## Learn More
+| Command | Calls | API units |
+| --- | --- | --- |
+| `npm run data:flights` | 25 | 50 |
+| `npm run data:flights -- --windows 2` (24h) | 50 | 100 |
+| `npm run data:flights -- LOWI LPMA EGJJ` | 3 | 6 |
 
-To learn more about Next.js, take a look at the following resources:
+The free plan has 600 units/month; Pro ($5.35/mo) has 6,000. Flights come from the airports you ingest, so add the regional airports you care about to grow coverage.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `GET /api/options`: aircraft types, airlines and airports present in the data
+- `GET /api/search`: `aircraft` (repeatable), `airline`, `dep`, `arr` (ICAO or IATA), `minDuration`/`maxDuration` (minutes), `depSize`/`arrSize` (`large|medium|small`), `sort` (`duration|departure|airline`), `limit`
 
-## Deploy on Vercel
+## Tests
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm test
+```

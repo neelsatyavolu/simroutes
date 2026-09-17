@@ -1,0 +1,169 @@
+/* Styled after a paper ATC flight progress strip: ident box, type, route, timing box. */
+.strip {
+  display: grid;
+  grid-template-columns: 150px minmax(110px, 1fr) minmax(140px, 1.3fr) 44px minmax(140px, 1.3fr) 92px;
+  align-items: stretch;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-left: 6px solid var(--ifr);
+  border-radius: 2px;
+  box-shadow: var(--shadow);
+  animation: slide-in 280ms ease-out both;
+  transition: transform 140ms ease, border-color 140ms ease;
+}
+
+.strip:hover {
+  transform: translateX(4px);
+  border-left-color: var(--magenta);
+}
+
+.strip > * {
+  padding: 10px 12px;
+  min-width: 0;
+}
+
+.strip > * + * {
+  border-left: 1px dashed var(--rule);
+}
+
+.ident {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--strip-dep);
+}
+
+.flightNo {
+  font-family: var(--font-mono), monospace;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.airline {
+  font-size: 12px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.type {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ifr);
+}
+
+.airport {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.codeRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.icao {
+  font-family: var(--font-display), sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.iata {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  color: var(--ink-faint);
+}
+
+.size {
+  margin-left: auto;
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+}
+
+.size[data-size="large"] { color: var(--ifr); }
+.size[data-size="medium"] { color: var(--magenta); }
+.size[data-size="small"] { color: var(--amber); }
+
+.name {
+  font-size: 12px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.time {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+}
+
+.time span {
+  font-size: 9px;
+  color: var(--ink-faint);
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  color: var(--magenta);
+  padding: 0 !important;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(--strip-arr);
+}
+
+.blockLabel {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.blockTime {
+  font-family: var(--font-mono), monospace;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .strip {
+    grid-template-columns: 1fr 32px 1fr;
+    grid-template-areas:
+      "ident ident block"
+      "type type type"
+      "dep arrow arr";
+  }
+  .ident { grid-area: ident; }
+  .block { grid-area: block; }
+  .type { grid-area: type; border-left: 0 !important; border-top: 1px dashed var(--rule); padding-block: 6px; }
+  .airport[data-side="dep"] { grid-area: dep; border-left: 0 !important; border-top: 1px dashed var(--rule); }
+  .arrow { grid-area: arrow; border-left: 0 !important; border-top: 1px dashed var(--rule); }
+  .airport[data-side="arr"] { grid-area: arr; border-left: 0 !important; border-top: 1px dashed var(--rule); }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}

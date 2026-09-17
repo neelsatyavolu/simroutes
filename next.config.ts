@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // API routes read data/*.json at runtime via process.cwd(), which file tracing can't detect.
+  outputFileTracingIncludes: {
+    "/api/*": ["./data/**/*"],
+  },
 };
 
 export default nextConfig;
