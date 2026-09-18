@@ -53,13 +53,13 @@ export function parseNewPlan(input: unknown, today: Date): { ok: true; plan: New
   };
 }
 
-export type PlanUpdate = { plannedDate: string } | { status: "flown" };
+export type PlanUpdate = { plannedDate: string } | { status: "planned" | "flown" };
 
 export function parsePlanUpdate(input: unknown, today: Date): { ok: true; update: PlanUpdate } | { ok: false; error: string } {
   if (input && typeof input === "object" && "plannedDate" in input) {
     const parsed = z.object({ plannedDate: isoDate(today) }).strict().safeParse(input);
     return parsed.success ? { ok: true, update: parsed.data } : { ok: false, error: firstIssue(parsed.error) };
   }
-  const parsed = z.object({ status: z.literal("flown") }).strict().safeParse(input);
-  return parsed.success ? { ok: true, update: parsed.data } : { ok: false, error: 'Send a new plannedDate or status "flown"' };
+  const parsed = z.object({ status: z.enum(["planned", "flown"]) }).strict().safeParse(input);
+  return parsed.success ? { ok: true, update: parsed.data } : { ok: false, error: 'Send a new plannedDate or status "planned" or "flown"' };
 }

@@ -72,6 +72,11 @@ export async function deleteLogbookFlight(userId: string, id: string): Promise<b
   return rows.length > 0;
 }
 
+export async function deletePlanLogbookFlight(userId: string, planId: string): Promise<void> {
+  await db()`DELETE FROM logbook_flights
+    WHERE user_id = ${userId} AND source = 'plan' AND dedupe_key = ${`plan:${planId}`}`;
+}
+
 export async function clearLogbook(userId: string): Promise<number> {
   const rows = (await db()`DELETE FROM logbook_flights WHERE user_id = ${userId} RETURNING id`) as unknown[];
   return rows.length;

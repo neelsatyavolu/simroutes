@@ -1,5 +1,5 @@
 import { jsonError, requireUser, serverError } from "@/lib/api";
-import { addToLogbook } from "@/lib/logbook/repo";
+import { addToLogbook, deletePlanLogbookFlight } from "@/lib/logbook/repo";
 import { deletePlan, getPlan, updatePlan } from "@/lib/planner/repo";
 import { parsePlanUpdate } from "@/lib/planner/validation";
 
@@ -16,7 +16,7 @@ export async function PATCH(request: Request, { params }: RouteContext<"/api/pla
   try {
     const existing = await getPlan(user.userId, id);
     if (!existing) return jsonError("Plan not found", 404);
-    if ("status" in parsed.update && existing.status !== "flown") {
+    if ("status" in parsed.update && parsed.update.status === "flown" && existing.status !== "flown") {
       // Logged with the plan id as external id, so marking twice can't duplicate it.
       await addToLogbook(user.userId, "plan", [{
         depIcao: existing.depIcao,
@@ -26,6 +26,9 @@ export async function PATCH(request: Request, { params }: RouteContext<"/api/pla
         flownAt: new Date(`${existing.plannedDate}T${existing.depLocal}:00Z`).toISOString(),
         externalId: existing.id,
       }]);
+    }
+    if ("status" in parsed.update && parsed.update.status === "planned") {
+      await deletePlanLogbookFlight(user.userId, id);
     }
     return Response.json({ plan: await updatePlan(user.userId, id, parsed.update) });
   } catch (error) {

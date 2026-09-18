@@ -154,6 +154,18 @@ function PlanCard({ plan, canLoadOfp, onChanged }: { plan: Plan; canLoadOfp: boo
           </button>
         </div>
       )}
+      {plan.status === "flown" && (
+        <div className={styles.actions}>
+          <button
+            type="button"
+            className={styles.secondary}
+            disabled={busy !== null}
+            onClick={() => act("unflown", () => sendJson(`/api/plans/${plan.id}`, { method: "PATCH", headers: json, body: JSON.stringify({ status: "planned" }) }))}
+          >
+            {busy === "unflown" ? "Saving…" : "Mark unflown"}
+          </button>
+        </div>
+      )}
       {error && <p className={styles.error} role="alert">{error}</p>}
     </li>
   );

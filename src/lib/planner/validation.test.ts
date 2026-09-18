@@ -51,6 +51,10 @@ describe("parsePlanUpdate", () => {
     expect(parsePlanUpdate({ plannedDate: "2020-01-01" }, TODAY)).toEqual({ ok: false, error: "Pick a date between today and a year from now" });
   });
 
+  it("accepts marking as unflown without rescheduling", () => {
+    expect(parsePlanUpdate({ status: "planned" }, TODAY)).toEqual({ ok: true, update: { status: "planned" } });
+  });
+
   it("rejects empty or unknown changes", () => {
     expect(parsePlanUpdate({}, TODAY).ok).toBe(false);
     expect(parsePlanUpdate({ status: "cancelled" }, TODAY).ok).toBe(false);

@@ -5,9 +5,19 @@
 > Each entry has a short summary and a transcript path you can Read for detail.
 
 - **Project**: `930dba21-0349-4fa5-9776-07b31e7d4d7f`
-- **Revision**: 6
-- **Updated**: 2026-09-17T22:08:32.333Z
-- **Sessions**: 5
+- **Revision**: 7
+- **Updated**: 2026-09-18T06:06:36.120Z
+- **Sessions**: 6
+
+## Mark planned flights as unflown
+
+- **id**: `01a0b31d-e6c5-7ef0-8bb3-2328b084b37b`
+- **provider**: unknown
+- **status**: idle
+- **updated**: 2026-09-18T06:06:36.120Z
+- **transcript**: _(none resolved)_
+
+Added Mark unflown button to flown cards under Planned > Show flown. PATCH validation accepts planned status; route removes the current user's exact plan-sourced logbook entry before restoring planned status, preserving scheduled date and OFP. Existing mark-flown path now explicitly checks requested status. Added validation and route regression coverage for undo, repeated undo, re-marking flown, missing plans, and cleanup failure. npm test: 141 tests passed; npm run lint and npx tsc --noEmit passed. No deployment performed.
 
 ## Airport scenery tab and production fetch fallback
 
