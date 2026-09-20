@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { ForYou } from "@/components/ForYou";
 import { EMPTY_FILTERS, toSearchParams, type Filters } from "@/lib/filters";
 import { getJson } from "@/lib/http";
+import { groupFlightsByRoute } from "@/lib/route-groups";
 import type { OptionsResponse, SearchQuery, SearchResponse } from "@/lib/types";
 import { FilterPanel } from "./FilterPanel";
-import { FlightStrip } from "./FlightStrip";
-import { PlanButton } from "./PlanButton";
+import { RouteStrip } from "@/components/RouteStrip";
 import shared from "./shared.module.css";
 import styles from "./SearchView.module.css";
 
@@ -16,6 +16,7 @@ const DEBOUNCE_MS = 250;
 type Status = { kind: "loading" } | { kind: "error"; message: string } | { kind: "ready"; data: SearchResponse };
 
 const SORTS: { value: SearchQuery["sort"]; label: string }[] = [
+  { value: "recommended", label: "Recommended" },
   { value: "duration", label: "Block time" },
   { value: "departure", label: "Departure" },
   { value: "airline", label: "Airline" },
@@ -49,6 +50,7 @@ export function SearchView({ options }: { options: OptionsResponse | null }) {
   }, [filters, showForYou]);
 
   const noData = options !== null && options.flightCount === 0;
+  const groups = status.kind === "ready" ? groupFlightsByRoute(status.data.results) : [];
 
   return (
     <div className={styles.layout}>
@@ -62,7 +64,7 @@ export function SearchView({ options }: { options: OptionsResponse | null }) {
             {showForYou ? "Flights picked for you" : status.kind === "ready" ? (
               <>
                 <strong>{status.data.total.toLocaleString()}</strong> {status.data.total === 1 ? "flight" : "flights"}
-                {status.data.total > status.data.results.length && <span> · showing {status.data.results.length}</span>}
+                <span> · {groups.length} {groups.length === 1 ? "route" : "routes"}{status.data.total > status.data.results.length ? ` in first ${status.data.results.length} flights` : ""}</span>
               </>
             ) : status.kind === "loading" ? "Searching…" : ""}
           </p>
@@ -80,6 +82,10 @@ export function SearchView({ options }: { options: OptionsResponse | null }) {
             ))}
           </div>
         </div>
+
+        {!showForYou && filters.sort === "recommended" && (
+          <p className={styles.count}>Unvisited airports first, then less visited airports in your logbook. Without flight history, sorted by block time.</p>
+        )}
 
         {noData ? (
           <div className={shared.empty}>
@@ -100,7 +106,7 @@ export function SearchView({ options }: { options: OptionsResponse | null }) {
           </div>
         ) : status.kind === "ready" ? (
           <ol className={shared.list}>
-            {status.data.results.map((f, i) => <FlightStrip key={f.id} flight={f} index={i} action={<PlanButton flight={f} />} />)}
+            {groups.map((group) => <RouteStrip key={group.id} group={group} />)}
           </ol>
         ) : null}
       </main>

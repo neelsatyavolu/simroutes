@@ -30,7 +30,7 @@ const querySchema = z
     maxDuration: minutes,
     depSizes: listParam(z.enum(AIRPORT_SIZES)),
     arrSizes: listParam(z.enum(AIRPORT_SIZES)),
-    sort: z.enum(["duration", "departure", "airline"]).default("duration"),
+    sort: z.enum(["recommended", "duration", "departure", "airline"]).default("duration"),
     limit: z.coerce.number().int().min(1).max(MAX_LIMIT).default(100),
   })
   .refine((q) => q.minDuration === undefined || q.maxDuration === undefined || q.minDuration <= q.maxDuration, {
@@ -79,7 +79,7 @@ const matchesAirport = (code: string | undefined, icao: string, airport: Airport
 const matchesSize = (sizes: SearchQuery["depSizes"], airport: Airport | null) =>
   sizes.length === 0 || (airport !== null && sizes.includes(airport.size));
 
-const COMPARATORS: Record<SearchQuery["sort"], (a: FlightRecord, b: FlightRecord) => number> = {
+const COMPARATORS: Record<Exclude<SearchQuery["sort"], "recommended">, (a: FlightRecord, b: FlightRecord) => number> = {
   duration: (a, b) => a.durationMin - b.durationMin,
   departure: (a, b) => a.depLocal.localeCompare(b.depLocal),
   airline: (a, b) => a.airline.name.localeCompare(b.airline.name) || a.durationMin - b.durationMin,
@@ -89,12 +89,27 @@ export function searchFlights(
   flights: readonly FlightRecord[],
   airports: ReadonlyMap<string, Airport>,
   q: SearchQuery,
+  history: readonly Pick<FlightRecord, "depIcao" | "arrIcao">[] = [],
 ): SearchResponse {
   const aircraft = new Set(q.aircraft);
   const flightNumber = normalizeFlightNumber(q.flightNumber ?? "");
   const airlines = new Set(q.airlines.map((a) => a.toUpperCase()));
   const dep = q.dep?.toUpperCase();
   const arr = q.arr?.toUpperCase();
+  const visits = new Map<string, number>();
+  if (q.sort === "recommended") {
+    for (const flight of history) {
+      for (const code of [flight.depIcao, flight.arrIcao]) {
+        visits.set(code, (visits.get(code) ?? 0) + 1);
+      }
+    }
+  }
+  const visitedAirports = (f: FlightRecord) => Number(visits.has(f.depIcao)) + Number(visits.has(f.arrIcao));
+  const visitCount = (f: FlightRecord) => (visits.get(f.depIcao) ?? 0) + (visits.get(f.arrIcao) ?? 0);
+  const compare = q.sort === "recommended"
+    ? (a: FlightRecord, b: FlightRecord) =>
+      visitedAirports(a) - visitedAirports(b) || visitCount(a) - visitCount(b) || COMPARATORS.duration(a, b)
+    : COMPARATORS[q.sort];
 
   const matches = flights
     .map((f) => ({ ...f, dep: airports.get(f.depIcao) ?? null, arr: airports.get(f.arrIcao) ?? null }))
@@ -110,7 +125,7 @@ export function searchFlights(
         matchesSize(q.depSizes, f.dep) &&
         matchesSize(q.arrSizes, f.arr),
     )
-    .sort(COMPARATORS[q.sort]);
+    .sort(compare);
 
   return { total: matches.length, results: matches.slice(0, q.limit) };
 }

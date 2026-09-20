@@ -5,9 +5,19 @@
 > Each entry has a short summary and a transcript path you can Read for detail.
 
 - **Project**: `930dba21-0349-4fa5-9776-07b31e7d4d7f`
-- **Revision**: 7
-- **Updated**: 2026-09-18T06:06:36.120Z
-- **Sessions**: 6
+- **Revision**: 8
+- **Updated**: 2026-09-20T19:42:58.919Z
+- **Sessions**: 7
+
+## Recommended search sorting; Volanta connection unresolved
+
+- **id**: `01a0c052-b84c-7ee0-a45d-2fe108f39b61`
+- **provider**: unknown
+- **status**: idle
+- **updated**: 2026-09-20T19:42:58.919Z
+- **transcript**: _(none resolved)_
+
+Added Recommended search sort, default for filtered searches; For you landing remains. Search ranks all filtered matches by fewer visited endpoints then lower lifetime endpoint visit count, tie block time, before limiting. API reads signed-in user's existing listLogbook only for recommended, anonymous fallback, private/no-store. Added search/parser/filter and API privacy/auth-scope tests. 152 tests pass, lint, tsc and diff checks pass. README documents behavior and incomplete full-history connection. User explicitly selected account connection over CSV. Investigated sources; could not verify Volanta third-party authorization flow, app direct inspection 403, exporter source private with documented five-flight public restriction. Existing five-flight importer unchanged; full account integration remains open. Concurrent agent edits to SearchView route grouping and untracked RouteStrip/route-groups/playwright files preserved. No deployment or commit.
 
 ## Mark planned flights as unflown
 

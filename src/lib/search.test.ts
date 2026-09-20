@@ -39,6 +39,39 @@ const query = (over: Partial<SearchQuery> = {}): SearchQuery => ({
 const ids = (q: SearchQuery) => searchFlights(flights, airports, q).results.map((r) => r.id);
 
 describe("searchFlights", () => {
+  it("recommends unvisited airports before shorter familiar routes, before limiting", () => {
+    const history = [{ depIcao: "EGLL", arrIcao: "KJFK" }];
+    const records = [
+      flight("familiar", { durationMin: 30 }),
+      flight("one-new", { arrIcao: "EGJJ", durationMin: 60 }),
+      flight("both-new", { depIcao: "EGJJ", arrIcao: "EGHE", durationMin: 120 }),
+    ];
+    const result = searchFlights(records, airports, query({ sort: "recommended", limit: 2 }), history);
+    expect(result.results.map((f) => f.id)).toEqual(["both-new", "one-new"]);
+    expect(result.total).toBe(3);
+    expect(records.map((f) => f.id)).toEqual(["familiar", "one-new", "both-new"]);
+  });
+
+  it("prefers less frequently visited airports while preserving filters", () => {
+    const history = [
+      { depIcao: "EGLL", arrIcao: "KJFK" },
+      { depIcao: "EGLL", arrIcao: "KJFK" },
+      { depIcao: "EGJJ", arrIcao: "EGHE" },
+    ];
+    const ranked = searchFlights([
+      flight("frequent", { durationMin: 30 }),
+      flight("rare", { depIcao: "EGJJ", arrIcao: "EGHE", durationMin: 120 }),
+    ], airports, query({ sort: "recommended" }), history);
+    expect(ranked.results.map((f) => f.id)).toEqual(["rare", "frequent"]);
+    const result = searchFlights(flights, airports, query({ sort: "recommended", aircraft: ["Airbus A320"], minDuration: 40 }), history);
+    expect(result.results.map((f) => f.id)).toEqual(["F2", "F4"]);
+    expect(searchFlights(flights, airports, query({ sort: "recommended", dep: "LHR" }), history).results.map((f) => f.id)).toEqual(["F2", "F1"]);
+    expect(searchFlights(flights, airports, query({ sort: "departure" }), history).results.map((f) => f.id)).toEqual(ids(query({ sort: "departure" })));
+  });
+
+  it("falls back to block time with no history", () => {
+    expect(ids(query({ sort: "recommended" }))).toEqual(ids(query()));
+  });
   it("matches full or partial flight numbers ignoring case and whitespace", () => {
     const records = [flight("BA123", {}), flight("BA 124", {}), flight("LM123", {})];
     const find = (flightNumber: string) => searchFlights(records, airports, query({ flightNumber })).results.map((f) => f.id);
@@ -100,6 +133,9 @@ describe("searchFlights", () => {
 });
 
 describe("parseSearchParams", () => {
+  it("accepts recommended sorting", () => {
+    expect(parseSearchParams(new URLSearchParams("sort=recommended"))).toEqual({ ok: true, query: query({ sort: "recommended" }) });
+  });
   it("normalizes flight numbers and omits blank values", () => {
     expect(parseSearchParams(new URLSearchParams({ flightNumber: " ba 123 " }))).toEqual({
       ok: true, query: query({ flightNumber: "BA123" }),

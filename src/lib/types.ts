@@ -65,7 +65,7 @@ export interface SearchQuery {
   maxDuration?: number;
   depSizes: AirportSize[];
   arrSizes: AirportSize[];
-  sort: "duration" | "departure" | "airline";
+  sort: "recommended" | "duration" | "departure" | "airline";
   limit: number;
 }
 

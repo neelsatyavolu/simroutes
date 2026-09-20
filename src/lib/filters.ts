@@ -24,7 +24,7 @@ export const EMPTY_FILTERS: Filters = {
   maxHours: "",
   depSizes: [],
   arrSizes: [],
-  sort: "duration",
+  sort: "recommended",
 };
 
 const hoursToMinutes = (value: string): number | null => {

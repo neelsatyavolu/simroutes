@@ -6,9 +6,9 @@
 > Do not store secrets (API keys, tokens, passwords).
 
 - **Project**: `930dba21-0349-4fa5-9776-07b31e7d4d7f`
-- **Revision**: 3
-- **Updated**: 2026-09-17T22:08:29.226Z
-- **Active entries**: 3
+- **Revision**: 4
+- **Updated**: 2026-09-20T19:42:46.979Z
+- **Active entries**: 4
 
 ## Decisions
 
@@ -43,3 +43,15 @@
 - **created**: 2026-09-17T22:08:29.226Z
 - **updated**: 2026-09-17T22:08:29.226Z
 - **content**: "2026-09-17 Vercel runtime logs showed KORD scenery requests returning 502, which the original route emits only for non-OK source HTTP responses. Source was accessible from local Node. Added data/scenery.json snapshot fallback for rejected requests, timeouts, and parser failures; UI exposes capture date via fallbackUpdatedAt. Refresh with npm run data:scenery, commit and deploy. Keep snapshot available in production bundle; verified Next route NFT includes it."
+
+## Issues
+
+### "Volanta full-history account connection requested, not yet implemented"
+
+- **id**: `128913b6-8d06-40d5-b8a0-7fa8c594ecfa`
+- **kind**: issue
+- **source**: agent
+- **authority**: agent
+- **created**: 2026-09-20T19:42:46.979Z
+- **updated**: 2026-09-20T19:42:46.979Z
+- **content**: "User explicitly chose connecting a Volanta account, rather than importing a file, for full history to improve Recommended search. Existing public username importer still limited to five flights. Could not verify documented third-party authorization API; direct fly.volanta.app inspection returned 403. Public Scyks/volanta-data-exporter README confirms five-flight restriction and says workaround source is private. Do not present current importer as full-history connection. Recommended sorting implemented using existing per-user logbook; account integration remains open."

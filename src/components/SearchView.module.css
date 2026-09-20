@@ -35,12 +35,14 @@
 
 .sort {
   display: flex;
+  max-width: 100%;
+  overflow-x: auto;
   border: 1px solid var(--ink);
   border-radius: 2px;
-  overflow: hidden;
 }
 
 .sort button {
+  white-space: nowrap;
   padding: 6px 12px;
   border: 0;
   background: var(--panel);

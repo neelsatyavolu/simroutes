@@ -32,7 +32,9 @@ The free plan has 600 units/month; Pro ($5.35/mo) has 6,000. Flights come from t
 - `GET /api/options`: aircraft types, airlines and airports present in the data
 - `GET /api/airports?q=...`: up to 30 airports matched by ICAO, IATA, name or city, independent of schedule coverage
 - `GET /api/airports/:icao/scenery`: matching MSFS 2024 scenery from the SceneryAddons compatibility index
-- `GET /api/search`: `aircraft` (repeatable), `airline`, `dep`, `arr` (ICAO or IATA), `minDuration`/`maxDuration` (minutes), `depSize`/`arrSize` (`super-large|large|medium|small|mini`), `sort` (`duration|departure|airline`), `limit`
+- `GET /api/search`: `aircraft` (repeatable), `airline`, `dep`, `arr` (ICAO or IATA), `minDuration`/`maxDuration` (minutes), `depSize`/`arrSize` (`super-large|large|medium|small|mini`), `sort` (`recommended|duration|departure|airline`), `limit`
+
+Filtered searches default to Recommended: fewer previously visited airports first, then fewer total airport visits in the signed-in user's logbook, with block time breaking ties. All filters apply before ranking, and the result limit applies afterward. Signed-out users and empty logbooks fall back to block time. The existing Volanta username importer retrieves only five recent public flights; full-history account authorization is not implemented.
 
 ## Airport scenery
 

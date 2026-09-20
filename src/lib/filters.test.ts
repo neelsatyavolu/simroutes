@@ -11,7 +11,7 @@ describe("toSearchParams", () => {
   });
 
   it("omits empty filters", () => {
-    expect(toSearchParams(EMPTY_FILTERS).toString()).toBe("sort=duration");
+    expect(toSearchParams(EMPTY_FILTERS).toString()).toBe("sort=recommended");
   });
 
   it("converts hours to minutes and round-trips through the API parser", () => {
