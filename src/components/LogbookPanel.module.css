@@ -34,12 +34,64 @@
   text-align: center;
 }
 
+.importSection {
+  border-bottom: 1px solid var(--rule);
+}
+
+.importSection > summary {
+  padding: 12px 18px;
+  color: var(--ifr);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .imports {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 16px 18px;
-  border-bottom: 1px dashed var(--rule);
+  padding: 0 18px 16px;
+}
+
+.methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.methods button {
+  flex: 1;
+  padding: 8px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.methods button[aria-pressed="true"] {
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: 0 1px 3px #0002;
+}
+
+.methods button:disabled {
+  cursor: default;
+}
+
+.accountForm > .row {
+  margin-bottom: 12px;
+}
+
+.accountForm > .button {
+  width: 100%;
+  margin-top: 12px;
 }
 
 .drop {

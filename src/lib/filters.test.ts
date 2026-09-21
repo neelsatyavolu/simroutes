@@ -46,3 +46,11 @@ describe("toSearchParams", () => {
     expect(toSearchParams({ ...EMPTY_FILTERS, minHours: "abc" }).has("minDuration")).toBe(false);
   });
 });
+
+
+it("round-trips selected regions and clears them with empty filters", () => {
+  const params = toSearchParams({ ...EMPTY_FILTERS, regions: ["us", "europe"] });
+  expect(params.getAll("region")).toEqual(["us", "europe"]);
+  expect(parseSearchParams(params)).toMatchObject({ ok: true, query: { regions: ["us", "europe"] } });
+  expect(toSearchParams(EMPTY_FILTERS).has("region")).toBe(false);
+});

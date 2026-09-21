@@ -5,9 +5,29 @@
 > Each entry has a short summary and a transcript path you can Read for detail.
 
 - **Project**: `930dba21-0349-4fa5-9776-07b31e7d4d7f`
-- **Revision**: 9
-- **Updated**: 2026-09-20T23:55:56.901Z
-- **Sessions**: 7
+- **Revision**: 11
+- **Updated**: 2026-09-21T17:15:25.397Z
+- **Sessions**: 9
+
+## Search region filter
+
+- **id**: `01a0c4f4-5176-7150-8a96-c649a8c97495`
+- **provider**: unknown
+- **status**: idle
+- **updated**: 2026-09-21T17:15:25.397Z
+- **transcript**: _(none resolved)_
+
+Added Search Region multi-select using existing MultiSelect, with 14 country-code groups including US, Europe, East Asia. User chose both-airport matching; multiple regions form a union. Wired Filters defaults/reset and repeated region URL params through validated SearchQuery and server-side filtering. Added regression tests for both endpoints, union, missing/unknown airports, combined filters, limits and serialization. All 171 tests, ESLint, TypeScript and diff whitespace checks passed. Concurrent unrelated edits appeared in LogbookPanel, PlannedView, SearchView and VolantaConnection; left untouched. No commit/deploy.
+
+## Compact logbook import UI and remove explanatory banners
+
+- **id**: `01a0c4f4-a812-7960-b214-5872bd83974c`
+- **provider**: unknown
+- **status**: idle
+- **updated**: 2026-09-21T17:15:00.784Z
+- **transcript**: _(none resolved)_
+
+Removed Recommended sorting explanation from SearchView. Hide Navigraph card when neither configured nor connected, removing coming-soon banner while preserving usable connection UI. Logbook now has collapsed native Import flights disclosure with Volanta/CSV/Public profile method buttons showing one form at a time; preserves mounted Volanta component/session and disables method switches during imports. Improved account form spacing and shortened intro, retaining import methods and credential disclosure. Changed only five component/CSS files. npm run lint and git diff --check pass. npm test: 164 pass, 7 fail in unrelated region-filter tests; tsc fails on regions fields in same tests. src/lib/filters.test.ts and src/lib/search.test.ts were modified concurrently after initial clean status; left untouched. No browser visual verification, commit, or deploy performed.
 
 ## Recommended search and working Volanta full-history connection
 

@@ -2,6 +2,7 @@ import type { AirportSize, SearchQuery } from "./types";
 
 /** Form state for the route finder. Durations are typed in hours as free text. */
 export interface Filters {
+  regions: string[];
   flightNumber: string;
   aircraft: string[];
   airlines: string[];
@@ -15,6 +16,7 @@ export interface Filters {
 }
 
 export const EMPTY_FILTERS: Filters = {
+  regions: [],
   flightNumber: "",
   aircraft: [],
   airlines: [],
@@ -34,6 +36,7 @@ const hoursToMinutes = (value: string): number | null => {
 
 export function toSearchParams(f: Filters): URLSearchParams {
   const params = new URLSearchParams();
+  f.regions.forEach((r) => params.append("region", r));
   if (f.flightNumber.trim()) params.set("flightNumber", f.flightNumber.trim());
   f.aircraft.forEach((a) => params.append("aircraft", a));
   f.airlines.forEach((a) => params.append("airline", a));

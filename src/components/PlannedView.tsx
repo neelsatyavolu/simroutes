@@ -31,6 +31,7 @@ function dayLabel(date: string, today: string): string {
 }
 
 function NavigraphCard({ status, onChanged }: { status: NavigraphStatus | null; onChanged: () => void }) {
+  if (!status?.configured && !status?.alias) return null;
   const disconnect = async () => {
     await sendJson("/api/navigraph", { method: "DELETE" });
     onChanged();
@@ -41,10 +42,8 @@ function NavigraphCard({ status, onChanged }: { status: NavigraphStatus | null; 
         <h3>Navigraph</h3>
         {status?.alias ? (
           <p>Connected as <strong>{status.alias}</strong>. Load your latest SimBrief plan onto any flight.</p>
-        ) : status?.configured ? (
-          <p>Connect your Navigraph account to pull SimBrief flight plans into your planned flights.</p>
         ) : (
-          <p>Navigraph sign-in is coming soon. You can still plan flights and open them in SimBrief.</p>
+          <p>Connect your Navigraph account to pull SimBrief flight plans into your planned flights.</p>
         )}
       </div>
       {status?.alias ? (

@@ -33,7 +33,7 @@ const flights: FlightRecord[] = [
 ];
 
 const query = (over: Partial<SearchQuery> = {}): SearchQuery => ({
-  aircraft: [], airlines: [], depSizes: [], arrSizes: [], sort: "duration", limit: 100, ...over,
+  aircraft: [], airlines: [], regions: [], depSizes: [], arrSizes: [], sort: "duration", limit: 100, ...over,
 });
 
 const ids = (q: SearchQuery) => searchFlights(flights, airports, q).results.map((r) => r.id);
@@ -164,5 +164,53 @@ describe("parseSearchParams", () => {
     expect(parseSearchParams(new URLSearchParams("minDuration=-5")).ok).toBe(false);
     expect(parseSearchParams(new URLSearchParams("minDuration=200&maxDuration=100")).ok).toBe(false);
     expect(parseSearchParams(new URLSearchParams("dep=TOOLONGCODE")).ok).toBe(false);
+  });
+});
+
+
+describe("region filters", () => {
+  const regionalAirports = new Map([
+    ["EGLL", { ...airport("EGLL", "LHR", "large"), country: "GB" }],
+    ["LFPG", { ...airport("LFPG", "CDG", "large"), country: "FR" }],
+    ["KJFK", { ...airport("KJFK", "JFK", "large"), country: "US" }],
+    ["KLAX", { ...airport("KLAX", "LAX", "large"), country: "US" }],
+    ["RJTT", { ...airport("RJTT", "HND", "large"), country: "JP" }],
+    ["RKSI", { ...airport("RKSI", "ICN", "large"), country: "KR" }],
+    ["XXXX", { ...airport("XXXX", "XXX", "large"), country: "XX" }],
+  ]);
+  const records = [
+    flight("europe", { arrIcao: "LFPG", durationMin: 90 }),
+    flight("us", { depIcao: "KJFK", arrIcao: "KLAX", durationMin: 300 }),
+    flight("east-asia", { depIcao: "RJTT", arrIcao: "RKSI", durationMin: 120 }),
+    flight("outbound", {}),
+    flight("inbound", { depIcao: "KJFK", arrIcao: "EGLL" }),
+    flight("missing", { arrIcao: "ZZZZ" }),
+    flight("unknown-country", { arrIcao: "XXXX" }),
+  ];
+  const find = (over: Partial<SearchQuery>) => searchFlights(records, regionalAirports, query(over));
+
+  it("requires both endpoints in the selected region", () => {
+    expect(find({ regions: ["europe"] }).results.map((f) => f.id)).toEqual(["europe"]);
+    expect(find({ regions: ["us"] }).results.map((f) => f.id)).toEqual(["us"]);
+    expect(find({ regions: ["east-asia"] }).results.map((f) => f.id)).toEqual(["east-asia"]);
+  });
+
+  it("allows either selected region at each endpoint and combines other filters before limiting", () => {
+    expect(find({ regions: ["europe", "us"], maxDuration: 100 }).results.map((f) => f.id))
+      .toEqual(["outbound", "inbound", "europe"]);
+    expect(find({ regions: ["europe"], dep: "KJFK" }).total).toBe(0);
+    const result = find({ regions: ["europe", "us"], limit: 1 });
+    expect(result.total).toBe(4);
+    expect(result.results).toHaveLength(1);
+  });
+
+  it("does not restrict unknown or missing airports when no region is selected", () => {
+    expect(find({ regions: [] }).total).toBe(records.length);
+  });
+
+  it("parses repeated and comma-separated regions and rejects unknown regions", () => {
+    expect(parseSearchParams(new URLSearchParams("region=us,europe&region=east-asia")))
+      .toMatchObject({ ok: true, query: { regions: ["us", "europe", "east-asia"] } });
+    expect(parseSearchParams(new URLSearchParams("region=unknown")).ok).toBe(false);
   });
 });

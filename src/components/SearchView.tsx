@@ -83,10 +83,6 @@ export function SearchView({ options }: { options: OptionsResponse | null }) {
           </div>
         </div>
 
-        {!showForYou && filters.sort === "recommended" && (
-          <p className={styles.count}>Unvisited airports first, then less visited airports in your logbook. Without flight history, sorted by block time.</p>
-        )}
-
         {noData ? (
           <div className={shared.empty}>
             <h2>No schedule data yet</h2>

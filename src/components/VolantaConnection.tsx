@@ -105,7 +105,7 @@ export function VolantaConnection({ disabled, onBusyChange, onChanged }: {
   return (
     <div className={styles.volanta}>
       <p className={styles.dropTitle}>Connect Volanta</p>
-      <p className={styles.hint}>Import your completed flight history to improve recommendations. Up to 10,000 logbook flights.</p>
+      <p className={styles.hint}>Import completed flights. Up to 10,000 flights.</p>
       {connected ? (
         <>
           <p className={styles.hint}>Connected on this browser for up to one hour.</p>
@@ -115,7 +115,7 @@ export function VolantaConnection({ disabled, onBusyChange, onChanged }: {
           </div>
         </>
       ) : (
-        <form onSubmit={(e) => { e.preventDefault(); void run(e.currentTarget); }}>
+        <form className={styles.accountForm} onSubmit={(e) => { e.preventDefault(); void run(e.currentTarget); }}>
           <label htmlFor="volanta-account-user">Username or email</label>
           <div className={styles.row}><input id="volanta-account-user" name="username" autoComplete="username" required maxLength={254} disabled={disabled} /></div>
           <label htmlFor="volanta-account-password">Password</label>

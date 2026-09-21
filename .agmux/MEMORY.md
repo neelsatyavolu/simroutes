@@ -6,11 +6,21 @@
 > Do not store secrets (API keys, tokens, passwords).
 
 - **Project**: `930dba21-0349-4fa5-9776-07b31e7d4d7f`
-- **Revision**: 5
-- **Updated**: 2026-09-20T23:55:28.507Z
-- **Active entries**: 4
+- **Revision**: 6
+- **Updated**: 2026-09-21T17:15:23.226Z
+- **Active entries**: 5
 
 ## Decisions
+
+### "Search region filter requires both airports"
+
+- **id**: `13216b1c-7d49-45c7-94da-a78627696669`
+- **kind**: decision
+- **source**: agent
+- **authority**: agent
+- **created**: 2026-09-21T17:15:23.226Z
+- **updated**: 2026-09-21T17:15:23.226Z
+- **content**: "User explicitly chose both airports for the search region filter. Both endpoints must belong to the selected regions; multiple selected regions form a union, allowing routes between them. Country-code groupings live in src/lib/regions.ts; transcontinental countries are grouped whole."
 
 ### "Airport scenery targets MSFS 2024 only"
 

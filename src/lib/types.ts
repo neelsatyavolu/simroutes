@@ -1,3 +1,4 @@
+import type { Region } from "@/lib/regions";
 import type { AirportOption } from "./airport-search";
 
 export const AIRPORT_SIZES = ["super-large", "large", "medium", "small", "mini"] as const;
@@ -56,6 +57,7 @@ export interface FlightResult extends FlightRecord {
 }
 
 export interface SearchQuery {
+  regions: Region[];
   flightNumber?: string;
   aircraft: string[];
   airlines: string[];

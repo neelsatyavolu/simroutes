@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { EMPTY_FILTERS, type Filters } from "@/lib/filters";
 import { AIRPORT_SIZES, type AirportSize, type OptionsResponse } from "@/lib/types";
+import { REGIONS } from "@/lib/regions";
 import { AIRPORT_SIZE_INFO } from "@/lib/airport-sizes";
 import { AirportInput } from "./AirportInput";
 import { MultiSelect } from "./MultiSelect";
@@ -13,6 +14,8 @@ interface Props {
   options: OptionsResponse | null;
   onChange: (next: Filters) => void;
 }
+
+const REGION_OPTIONS = REGIONS.map(({ value, label }) => ({ value, label }));
 
 const DURATION_PRESETS = [
   { label: "< 1h", min: "", max: "1" },
@@ -119,7 +122,18 @@ export function FilterPanel({ filters, options, onChange }: Props) {
         </div>
       </Section>
 
-      <Section n="03" title="Block time">
+      <Section n="03" title="Region">
+        <MultiSelect
+          label="Regions"
+          placeholder="Any region"
+          options={REGION_OPTIONS}
+          selected={filters.regions}
+          onChange={(v) => set("regions", v)}
+        />
+        <p className={styles.sizeIntro}>Both airports must be within the selected regions.</p>
+      </Section>
+
+      <Section n="04" title="Block time">
         <div className={styles.pair}>
           {(["minHours", "maxHours"] as const).map((key) => (
             <label key={key} className={styles.field}>
@@ -156,7 +170,7 @@ export function FilterPanel({ filters, options, onChange }: Props) {
         </div>
       </Section>
 
-      <Section n="04" title="Airport size">
+      <Section n="05" title="Airport size">
         <p className={styles.sizeIntro}>Choose one or more sizes for each end.</p>
         <SizeToggle label="Departure" value={filters.depSizes} onChange={(v) => set("depSizes", v)} />
         <SizeToggle label="Arrival" value={filters.arrSizes} onChange={(v) => set("arrSizes", v)} />
@@ -168,7 +182,7 @@ export function FilterPanel({ filters, options, onChange }: Props) {
         </details>
       </Section>
 
-      <Section n="05" title="Airline">
+      <Section n="06" title="Airline">
         <MultiSelect
           label="Operators"
           placeholder="Any airline"
@@ -178,7 +192,7 @@ export function FilterPanel({ filters, options, onChange }: Props) {
         />
       </Section>
 
-      <Section n="06" title="Flight number">
+      <Section n="07" title="Flight number">
         <label className={styles.field}>
           <span>Full or partial number</span>
           <input

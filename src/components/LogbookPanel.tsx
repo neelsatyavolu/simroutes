@@ -35,6 +35,7 @@ export function LogbookPanel({ flights, onChanged }: Props) {
   const [notice, setNotice] = useState<Notice>(null);
   const [showAll, setShowAll] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [importMethod, setImportMethod] = useState<"account" | "csv" | "public">("account");
 
   const run = async (kind: "csv" | "volanta", action: () => Promise<ImportResponse>) => {
     setBusy(kind);
@@ -102,48 +103,59 @@ export function LogbookPanel({ flights, onChanged }: Props) {
         <span className={styles.count}>{flights ? flights.length : "…"}</span>
       </div>
 
-      <div className={styles.imports}>
-        <VolantaConnection disabled={busy !== null} onBusyChange={(active) => setBusy(active ? "volanta" : null)} onChanged={onChanged} />
-        <div
-          className={styles.drop}
-          data-dragging={dragging}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragging(true);
-          }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setDragging(false);
-            importFile(e.dataTransfer.files[0]);
-          }}
-        >
-          <p className={styles.dropTitle}>Upload a logbook CSV</p>
-          <p className={styles.hint}>Little Navmap, ELEVATEX, or any CSV with origin, destination and aircraft columns</p>
-          <button type="button" className={styles.button} disabled={busy !== null} onClick={() => fileInput.current?.click()}>
-            {busy === "csv" ? "Importing…" : "Choose file"}
-          </button>
-          <input ref={fileInput} type="file" accept=".csv,text/csv" hidden onChange={(e) => importFile(e.target.files?.[0])} />
-        </div>
-
-        <form className={styles.volanta} onSubmit={importVolanta}>
-          <label htmlFor="volanta-user">Volanta username</label>
-          <div className={styles.row}>
-            <input
-              id="volanta-user"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="your-username"
-              autoComplete="off"
-              spellCheck={false}
-            />
-            <button type="submit" className={styles.button} disabled={busy !== null || !username.trim()}>
-              {busy === "volanta" ? "Importing…" : "Import"}
-            </button>
+      <details className={styles.importSection}>
+        <summary>Import flights</summary>
+        <div className={styles.imports}>
+          <div className={styles.methods} role="group" aria-label="Import method">
+            {([["account", "Volanta"], ["csv", "CSV file"], ["public", "Public profile"]] as const).map(([value, label]) => (
+              <button key={value} type="button" aria-pressed={importMethod === value} disabled={busy !== null} onClick={() => setImportMethod(value)}>{label}</button>
+            ))}
           </div>
-          <p className={styles.hint}>Imports your 5 most recent public flights.</p>
-        </form>
-      </div>
+          <div hidden={importMethod !== "account"}>
+            <VolantaConnection disabled={busy !== null} onBusyChange={(active) => setBusy(active ? "volanta" : null)} onChanged={onChanged} />
+          </div>
+          <div
+            hidden={importMethod !== "csv"}
+            className={styles.drop}
+            data-dragging={dragging}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragging(false);
+              importFile(e.dataTransfer.files[0]);
+            }}
+          >
+            <p className={styles.dropTitle}>Upload a logbook CSV</p>
+            <p className={styles.hint}>Little Navmap, ELEVATEX, or any CSV with origin, destination and aircraft columns</p>
+            <button type="button" className={styles.button} disabled={busy !== null} onClick={() => fileInput.current?.click()}>
+              {busy === "csv" ? "Importing…" : "Choose file"}
+            </button>
+            <input ref={fileInput} type="file" accept=".csv,text/csv" hidden onChange={(e) => importFile(e.target.files?.[0])} />
+          </div>
+
+          <form hidden={importMethod !== "public"} className={styles.volanta} onSubmit={importVolanta}>
+            <label htmlFor="volanta-user">Volanta username</label>
+            <div className={styles.row}>
+              <input
+                id="volanta-user"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="your-username"
+                autoComplete="off"
+                spellCheck={false}
+              />
+              <button type="submit" className={styles.button} disabled={busy !== null || !username.trim()}>
+                {busy === "volanta" ? "Importing…" : "Import"}
+              </button>
+            </div>
+            <p className={styles.hint}>Imports your 5 most recent public flights.</p>
+          </form>
+        </div>
+      </details>
 
       {notice && (
         <div className={styles.notice} data-tone={notice.tone} role={notice.tone === "error" ? "alert" : "status"}>

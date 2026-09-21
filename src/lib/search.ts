@@ -1,3 +1,4 @@
+import { REGIONS } from "@/lib/regions";
 import { z } from "zod";
 import { AIRPORT_SIZES, type Airport, type FlightRecord, type SearchQuery, type SearchResponse } from "./types";
 
@@ -21,6 +22,7 @@ const minutes = z.coerce.number().int().min(0).max(24 * 60).optional();
 
 const querySchema = z
   .object({
+    regions: listParam(z.enum(REGIONS.map((region) => region.value))),
     flightNumber: z.string().transform(normalizeFlightNumber).optional(),
     aircraft: z.array(z.string()).transform((v) => v.map((s) => s.trim()).filter(Boolean)),
     airlines: listParam(z.string().max(3)),
@@ -42,6 +44,7 @@ export type ParseResult = { ok: true; query: SearchQuery } | { ok: false; error:
 export function parseSearchParams(params: URLSearchParams): ParseResult {
   const single = (key: string) => params.get(key) || undefined;
   const parsed = querySchema.safeParse({
+    regions: params.getAll("region"),
     flightNumber: single("flightNumber"),
     // Aircraft models contain no commas but may contain spaces, so only repeated params are used.
     aircraft: params.getAll("aircraft"),
@@ -91,6 +94,11 @@ export function searchFlights(
   q: SearchQuery,
   history: readonly Pick<FlightRecord, "depIcao" | "arrIcao">[] = [],
 ): SearchResponse {
+  const countries = new Set(REGIONS
+    .filter((region) => q.regions.includes(region.value))
+    .flatMap((region) => region.countries.split(" ")));
+  const matchesRegion = (airport: Airport | null) =>
+    q.regions.length === 0 || (airport !== null && countries.has(airport.country));
   const aircraft = new Set(q.aircraft);
   const flightNumber = normalizeFlightNumber(q.flightNumber ?? "");
   const airlines = new Set(q.airlines.map((a) => a.toUpperCase()));
@@ -118,6 +126,8 @@ export function searchFlights(
         (!flightNumber || normalizeFlightNumber(f.flightNumber).includes(flightNumber)) &&
         (aircraft.size === 0 || f.aircraft.some((a) => aircraft.has(a))) &&
         (airlines.size === 0 || airlines.has(f.airline.iata) || airlines.has(f.airline.icao)) &&
+        matchesRegion(f.dep) &&
+        matchesRegion(f.arr) &&
         matchesAirport(dep, f.depIcao, f.dep) &&
         matchesAirport(arr, f.arrIcao, f.arr) &&
         (q.minDuration === undefined || f.durationMin >= q.minDuration) &&
