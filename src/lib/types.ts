@@ -130,3 +130,14 @@ export interface OptionsResponse {
   flightCount: number;
   updatedAt: string | null;
 }
+
+export interface VolantaConnectionResponse {
+  connected: boolean;
+  twoFactorRequired?: boolean;
+}
+
+export interface VolantaSyncResponse extends ImportResponse {
+  skipped: number;
+  total: number;
+  nextPage: number | null;
+}

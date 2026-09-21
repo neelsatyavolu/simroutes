@@ -5,19 +5,19 @@
 > Each entry has a short summary and a transcript path you can Read for detail.
 
 - **Project**: `930dba21-0349-4fa5-9776-07b31e7d4d7f`
-- **Revision**: 8
-- **Updated**: 2026-09-20T19:42:58.919Z
+- **Revision**: 9
+- **Updated**: 2026-09-20T23:55:56.901Z
 - **Sessions**: 7
 
-## Recommended search sorting; Volanta connection unresolved
+## Recommended search and working Volanta full-history connection
 
 - **id**: `01a0c052-b84c-7ee0-a45d-2fe108f39b61`
 - **provider**: unknown
 - **status**: idle
-- **updated**: 2026-09-20T19:42:58.919Z
+- **updated**: 2026-09-20T23:55:56.901Z
 - **transcript**: _(none resolved)_
 
-Added Recommended search sort, default for filtered searches; For you landing remains. Search ranks all filtered matches by fewer visited endpoints then lower lifetime endpoint visit count, tie block time, before limiting. API reads signed-in user's existing listLogbook only for recommended, anonymous fallback, private/no-store. Added search/parser/filter and API privacy/auth-scope tests. 152 tests pass, lint, tsc and diff checks pass. README documents behavior and incomplete full-history connection. User explicitly selected account connection over CSV. Investigated sources; could not verify Volanta third-party authorization flow, app direct inspection 403, exporter source private with documented five-flight public restriction. Existing five-flight importer unchanged; full account integration remains open. Concurrent agent edits to SearchView route grouping and untracked RouteStrip/route-groups/playwright files preserved. No deployment or commit.
+Earlier turn added Recommended filtered-search default (novel airports, visit frequency, duration ties), privacy-scoped API history and tests. This follow-up user supplied a 1Password item to investigate Volanta connection. Used Proton account ID desktop CLI; secrets only in process/browser memory, never output/stored. Found actual app Session endpoint in public JS, verified password+TOTP live and authenticated Flights/Search pagination: 25/page despite requested 100. Implemented Connect Volanta form in LogbookPanel with optional MFA/challenge, progress, full-history page sync, disconnect, retry dedupe, completed-flight-only import and existing 10k cap. User-bound AES-GCM encrypted HttpOnly SameSite Strict cookie expires in 1h; HKDF derives from optional VOLANTA_SESSION_SECRET or existing Clerk secret. No DB/schema or auth scoping changes. Live implemented connector read all 105 entries, 104 unique completed usable flights and one skipped; this was read-only verification, not a DB import. Verified actual token fits cookie and roundtrips. Browser mock UI test passed MFA, two pages, cleared password, disconnect, mobile no overflow. 166 tests, ESLint, TypeScript and production build pass; build needed network escalation for existing Google Fonts. Temporary preview route removed. README updated; memory issue replaced with verified integration details. No commit/deployment; production egress to unofficial Volanta API remains unverified.
 
 ## Mark planned flights as unflown
 

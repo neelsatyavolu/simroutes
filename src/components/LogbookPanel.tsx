@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { VolantaConnection } from "@/components/VolantaConnection";
 import { formatDuration } from "@/lib/filters";
 import { sendJson } from "@/lib/http";
 import type { ImportResponse, LogbookFlightView } from "@/lib/types";
@@ -102,6 +103,7 @@ export function LogbookPanel({ flights, onChanged }: Props) {
       </div>
 
       <div className={styles.imports}>
+        <VolantaConnection disabled={busy !== null} onBusyChange={(active) => setBusy(active ? "volanta" : null)} onChanged={onChanged} />
         <div
           className={styles.drop}
           data-dragging={dragging}

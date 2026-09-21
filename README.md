@@ -34,7 +34,7 @@ The free plan has 600 units/month; Pro ($5.35/mo) has 6,000. Flights come from t
 - `GET /api/airports/:icao/scenery`: matching MSFS 2024 scenery from the SceneryAddons compatibility index
 - `GET /api/search`: `aircraft` (repeatable), `airline`, `dep`, `arr` (ICAO or IATA), `minDuration`/`maxDuration` (minutes), `depSize`/`arrSize` (`super-large|large|medium|small|mini`), `sort` (`recommended|duration|departure|airline`), `limit`
 
-Filtered searches default to Recommended: fewer previously visited airports first, then fewer total airport visits in the signed-in user's logbook, with block time breaking ties. All filters apply before ranking, and the result limit applies afterward. Signed-out users and empty logbooks fall back to block time. The existing Volanta username importer retrieves only five recent public flights; full-history account authorization is not implemented.
+Filtered searches default to Recommended: fewer previously visited airports first, then fewer total airport visits in the signed-in user's logbook, with block time breaking ties. All filters apply before ranking, and the result limit applies afterward. Signed-out users and empty logbooks fall back to block time. Connect Volanta in the logbook to import completed flight history with username/password and an authenticator code when enabled. The app API is unofficial: sign-in and pagination were verified live, but Volanta may change it. A user-bound encrypted HttpOnly cookie keeps the connection on that browser for up to one hour; passwords and codes are never stored. Sync imports one page per request, skips duplicates and retains progress on failure. Disconnect removes the local session, not imported flights. The public username importer remains available for five recent flights.
 
 ## Airport scenery
 
@@ -61,3 +61,5 @@ Departure and arrival tiers can each be multi-selected; **Any size** clears that
 ```bash
 npm test
 ```
+
+Volanta session encryption uses a purpose-specific HKDF key derived from `CLERK_SECRET_KEY`, or an optional dedicated `VOLANTA_SESSION_SECRET`. Rotating that key disconnects existing Volanta sessions. No new database migration is required.

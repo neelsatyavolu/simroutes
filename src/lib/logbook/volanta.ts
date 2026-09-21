@@ -12,7 +12,7 @@ const USERNAME = /^[A-Za-z0-9_.-]{2,40}$/;
 export const isValidVolantaUsername = (name: string) => USERNAME.test(name) && !name.includes("..");
 
 const airport = z.object({ icaoCode: z.string().nullish() }).nullish();
-const responseSchema = z.object({
+export const volantaResponseSchema = z.object({
   items: z.array(
     z.object({
       id: z.string(),
@@ -33,7 +33,7 @@ const utc = (value: string | null | undefined) => {
 };
 
 export function mapVolantaFlights(payload: unknown): ParsedLogbookRow[] {
-  const parsed = responseSchema.safeParse(payload);
+  const parsed = volantaResponseSchema.safeParse(payload);
   if (!parsed.success) return [];
   return parsed.data.items.flatMap((f) => {
     const dep = f.origin?.icaoCode?.toUpperCase();
