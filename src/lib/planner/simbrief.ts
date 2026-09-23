@@ -77,13 +77,19 @@ const num = (v: string | undefined) => {
 };
 const nonEmpty = (v: string | undefined) => (v ? v : null);
 
+// The link is rendered as an href, so only allow https URLs on SimBrief's own host.
+function simbriefPdfUrl(directory: string | undefined, file: string | undefined): string | null {
+  if (!directory || !file) return null;
+  const url = URL.parse(`${directory}${file}`);
+  return url?.protocol === "https:" && url.hostname === "www.simbrief.com" ? url.href : null;
+}
+
 export function mapOfp(payload: unknown): OfpSummary | null {
   const parsed = ofpSchema.safeParse(payload);
   if (!parsed.success) return null;
   const o = parsed.data;
   const generated = num(o.params.time_generated);
   const block = num(o.times?.est_block);
-  const pdf = o.files?.pdf?.link;
   return {
     requestId: o.params.request_id,
     generatedAt: generated ? new Date(generated * 1000).toISOString() : null,
@@ -99,7 +105,7 @@ export function mapOfp(payload: unknown): OfpSummary | null {
     blockMinutes: block === null ? null : Math.round(block / 60),
     rampFuel: num(o.fuel?.plan_ramp),
     fuelUnits: nonEmpty(o.params.units),
-    pdfUrl: pdf && o.files?.directory ? `${o.files.directory}${pdf}` : null,
+    pdfUrl: simbriefPdfUrl(o.files?.directory, o.files?.pdf?.link),
   };
 }
 

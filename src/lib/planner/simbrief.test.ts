@@ -73,6 +73,15 @@ describe("mapOfp", () => {
     });
   });
 
+  it.each([
+    ["javascript:", "alert(1)"],
+    ["https://evil.example/", "x.pdf"],
+    ["https://www.simbrief.com.evil.example/", "x.pdf"],
+    ["http://www.simbrief.com/ofp/", "x.pdf"],
+  ])("drops PDF links outside SimBrief (%s%s)", (directory, link) => {
+    expect(mapOfp({ ...ofp, files: { directory, pdf: { link } } })?.pdfUrl).toBeNull();
+  });
+
   it("returns null for errors or unexpected payloads", () => {
     expect(mapOfp({ fetch: { status: "Error: Unknown UserID" } })).toBeNull();
     expect(mapOfp(null)).toBeNull();

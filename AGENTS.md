@@ -12,6 +12,16 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 Finds real-world airline schedules to fly in a flight sim, filtered by aircraft type, block time, airports and airline. Adds a personal logbook, logbook-driven suggestions and a flight planner that dispatches to SimBrief.
 
+## This repo is public and open source (MIT)
+
+Every commit is world-readable at github.com/neelsatyavolu/simroutes and cannot be taken back once pushed, while the production app at simroutes.vercel.app stays live. Be more careful than in a private repo:
+
+- Never commit secrets, tokens, `.env*` files (except the empty `.env.example`), `data/flights.json`, `.agmux/`, logs, screenshots or personal details. Run `gitleaks git .` before pushing.
+- Treat every change as attacker-visible: keep auth and `user_id` scoping intact, validate input at the boundary, and never return internal error text to clients.
+- Every server `fetch` must target a fixed host; never build URLs from user input without validating them.
+- Keep `.github/workflows` least-privilege: no `pull_request_target`, explicit `permissions`, and inputs passed through `env:`.
+- `POST /api/logbook/volanta` is rate-limited by a Vercel WAF rule ("Rate limit Volanta sign-in"). Don't rename or move that route without updating the rule.
+
 ## Stack
 
 Next.js 16 App Router · React 19 · TypeScript (strict) · plain CSS Modules (no Tailwind or UI kit) · Clerk auth · Neon Postgres · Vercel Blob · zod · Vitest.

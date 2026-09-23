@@ -41,3 +41,19 @@ jobs:
           AIRPORTS: ${{ inputs.airports }}
           DAYS: ${{ inputs.days || '7' }}
         run: npx tsx scripts/ingest.ts $AIRPORTS --days "$DAYS"
+
+  # GitHub disables scheduled workflows in public repos after 60 days without repo activity.
+  # Re-enabling through the API resets that timer, so schedules keep refreshing with no commits.
+  keepalive:
+    needs: refresh
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - name: Keep schedule enabled
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh workflow enable refresh-schedules.yml
