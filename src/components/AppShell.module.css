@@ -93,7 +93,33 @@
 .account {
   display: flex;
   align-items: center;
+  gap: 12px;
   min-height: 34px;
+}
+
+.github {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.github svg {
+  width: 14px;
+  height: 14px;
+}
+
+.github:hover {
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .signIn {
