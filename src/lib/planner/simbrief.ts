@@ -121,8 +121,8 @@ export async function fetchLatestOfp(username: string): Promise<OfpSummary> {
       signal: AbortSignal.timeout(10_000),
       cache: "no-store",
     });
-  } catch (error) {
-    throw new SimbriefError(`Couldn't reach SimBrief (${(error as Error).message})`, 502);
+  } catch {
+    throw new SimbriefError("Couldn't reach SimBrief. Please try again.", 502);
   }
   if (res.status === 400) throw new SimbriefError("SimBrief has no flight plan for that account yet", 404);
   if (!res.ok) throw new SimbriefError(`SimBrief returned an error (${res.status})`, 502);

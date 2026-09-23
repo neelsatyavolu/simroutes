@@ -75,8 +75,8 @@ export async function fetchRecentVolantaFlights(username: string): Promise<Parse
       signal: AbortSignal.timeout(TIMEOUT_MS),
       cache: "no-store",
     });
-  } catch (error) {
-    throw new VolantaError(`Couldn't reach Volanta (${(error as Error).message})`, 502);
+  } catch {
+    throw new VolantaError("Couldn't reach Volanta. Please try again.", 502);
   }
   if (res.status === 404) throw new VolantaError("No public Volanta profile with that username", 404);
   if (!res.ok) throw new VolantaError(`Volanta returned an error (${res.status})`, 502);
