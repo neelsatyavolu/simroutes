@@ -100,26 +100,27 @@
 .github {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 12px;
-  border: 1px solid var(--ink);
+  justify-content: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border: 1px solid var(--rule);
   border-radius: 2px;
+  background: var(--panel);
   color: var(--ink);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-decoration: none;
-  transition: background 120ms ease, color 120ms ease;
-}
-
-.github svg {
-  width: 14px;
-  height: 14px;
+  white-space: nowrap;
+  transition: border-color 150ms ease, transform 150ms ease;
 }
 
 .github:hover {
-  background: var(--ink);
-  color: var(--paper);
+  border-color: var(--ink-soft);
+}
+
+.github:active {
+  transform: scale(0.98);
 }
 
 .signIn {
