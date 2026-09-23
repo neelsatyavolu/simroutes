@@ -14,13 +14,14 @@ Finds real-world airline schedules to fly in a flight sim, filtered by aircraft 
 
 ## This repo is public and open source (MIT)
 
-Every commit is world-readable at github.com/neelsatyavolu/simroutes and cannot be taken back once pushed, while the production app at simroutes.vercel.app stays live. Be more careful than in a private repo:
+Every commit is world-readable at github.com/neelsatyavolu/simroutes and cannot be taken back once pushed, while the production app at simroutes.n3el.dev stays live. Be more careful than in a private repo:
 
 - Never commit secrets, tokens, `.env*` files (except the empty `.env.example`), `data/flights.json`, `.agmux/`, logs, screenshots or personal details. Run `gitleaks git .` before pushing.
 - Treat every change as attacker-visible: keep auth and `user_id` scoping intact, validate input at the boundary, and never return internal error text to clients.
 - Every server `fetch` must target a fixed host; never build URLs from user input without validating them.
 - Keep `.github/workflows` least-privilege: no `pull_request_target`, explicit `permissions`, and inputs passed through `env:`.
 - `POST /api/logbook/volanta` is rate-limited by a Vercel WAF rule ("Rate limit Volanta sign-in"). Don't rename or move that route without updating the rule.
+- `simroutes.n3el.dev` is a Cloudflare CNAME to Vercel and must stay DNS-only (grey cloud): proxying it would make the WAF rate limit key on Cloudflare edge IPs. `simroutes.vercel.app` redirects to it.
 
 ## Stack
 

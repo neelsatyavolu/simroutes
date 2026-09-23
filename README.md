@@ -2,7 +2,7 @@
 
 Find real-world airline routes to fly in your flight sim, filtered by aircraft type, block time, departure/arrival airport, airport size and airline. SimRoutes also keeps a personal logbook, suggests routes you haven't flown, and plans flights that dispatch to SimBrief.
 
-**Live:** https://simroutes.vercel.app
+**Live:** https://simroutes.n3el.dev
 
 ## Features
 
