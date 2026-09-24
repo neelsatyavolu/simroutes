@@ -193,6 +193,10 @@
   color: var(--ink-faint);
 }
 
+.footer a {
+  color: inherit;
+}
+
 @media (max-width: 900px) {
   .page {
     padding: 20px 16px 32px;

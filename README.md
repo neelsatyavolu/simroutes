@@ -102,6 +102,14 @@ npm run build   # production build
 
 Coding conventions and project layout are in [AGENTS.md](AGENTS.md).
 
+## Privacy & analytics
+
+Every page loads a small script from [analytics.n3el.dev](https://analytics.n3el.dev), a cookieless analytics service run by the developer, to count page views. It sends the hostname, page path (query strings and fragments are dropped) and referrer. The service also records country and coarse device, browser and OS type, and keeps a daily visitor hash that can't be linked across days.
+
+It sets no cookies and stores no IP addresses, names, emails, logbook data or search content. It is separate from your Clerk account: no user ID is sent, so page views can't be tied to you. It doesn't run on localhost. To opt out, block `analytics.n3el.dev` in your browser or content blocker; the app works the same without it.
+
+Signing in is separate: Clerk sets its own session cookies, and your logbook and planned flights are stored with your account to provide those features.
+
 ## Data sources
 
 - Airports and runways: [OurAirports](https://ourairports.com/data/) (public domain)

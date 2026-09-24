@@ -1,6 +1,7 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Big_Shoulders, IBM_Plex_Sans_Condensed, Martian_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const display = Big_Shoulders({ variable: "--font-display", subsets: ["latin"], weight: "variable" });
@@ -17,6 +18,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body>
         <ClerkProvider>{children}</ClerkProvider>
+        {/* Anonymous, cookieless page-view counter; see README "Privacy & analytics". */}
+        <Script src="https://analytics.n3el.dev/p.js" strategy="afterInteractive" />
       </body>
     </html>
   );

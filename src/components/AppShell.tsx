@@ -110,7 +110,8 @@ export function AppShell() {
       </div>
 
       <footer className={styles.footer}>
-        Schedules: AeroDataBox · Airports: OurAirports · Not for real-world navigation
+        Schedules: AeroDataBox · Airports: OurAirports · Not for real-world navigation ·{" "}
+        <a href={`${REPO_URL}#privacy--analytics`}>Anonymous page-view counts, no tracking cookies</a>
       </footer>
     </div>
   );
