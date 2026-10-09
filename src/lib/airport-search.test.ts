@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { rankAirports, type AirportOption } from "./airport-search";
+import { airportCodeWhileTyping, matchAirportCode, rankAirports, type AirportOption } from "./airport-search";
 
 const ap = (icao: string, iata: string, name: string, city: string, count: number): AirportOption => ({
   icao, iata, name, city, country: "XX", count,
@@ -33,6 +33,17 @@ describe("rankAirports", () => {
   it("matches city and name words, busiest first", () => {
     expect(codes("london")).toEqual(["EGLL", "EGKK", "CYXU"]);
     expect(codes("madrid")).toEqual(["LEMD"]);
+  });
+
+  it("commits exact codes while typing, but not when they prefix a city name", () => {
+    const withDallas = [...airports, ap("KDAL", "DAL", "Dallas Love Field", "Dallas", 40), ap("KDFW", "DFW", "Dallas Fort Worth International Airport", "Dallas-Fort Worth", 900)];
+    expect(matchAirportCode(withDallas, "dal")).toBe("KDAL");
+    expect(matchAirportCode(withDallas, "egll")).toBe("EGLL");
+    expect(airportCodeWhileTyping(withDallas, "LHR")).toBe("EGLL");
+    expect(airportCodeWhileTyping(withDallas, "EGLL")).toBe("EGLL");
+    expect(airportCodeWhileTyping(withDallas, "DAL")).toBe("");
+    expect(airportCodeWhileTyping(withDallas, "Dallas")).toBe("");
+    expect(airportCodeWhileTyping(withDallas, "DFW")).toBe("KDFW");
   });
 
   it("ignores accents and respects the limit", () => {

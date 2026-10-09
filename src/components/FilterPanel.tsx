@@ -18,7 +18,7 @@ interface Props {
 const REGION_OPTIONS = REGIONS.map(({ value, label }) => ({ value, label }));
 
 const DURATION_PRESETS = [
-  { label: "< 1h", min: "", max: "1" },
+  { label: "≤ 1h", min: "", max: "1" },
   { label: "1–3h", min: "1", max: "3" },
   { label: "3–6h", min: "3", max: "6" },
   { label: "6h +", min: "6", max: "" },

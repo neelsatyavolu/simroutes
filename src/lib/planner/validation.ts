@@ -12,8 +12,9 @@ const isoDate = (today: Date) =>
     .refine((d) => {
       const start = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
       const days = (Date.parse(`${d}T00:00:00Z`) - start) / DAY_MS;
-      // One day of slack for users ahead of or behind UTC.
-      return days >= -1 && days <= MAX_DAYS_AHEAD;
+      // One day of slack on each side: local today and a year ahead can sit
+      // on either side of the UTC date used here.
+      return days >= -1 && days <= MAX_DAYS_AHEAD + 1;
     }, "Pick a date between today and a year from now");
 
 const icao = z.string().regex(/^[A-Z0-9]{4}$/, "Invalid airport code");

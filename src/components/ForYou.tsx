@@ -1,7 +1,7 @@
 "use client";
 
 import { SignInButton, useAuth } from "@clerk/nextjs";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { formatDuration } from "@/lib/filters";
 import { getJson } from "@/lib/http";
 import type { LogbookFlightView, LogbookResponse, SuggestionRowView, SuggestionsResponse } from "@/lib/types";
@@ -64,18 +64,30 @@ export function ForYou({ onBrowse, embedded = false }: { onBrowse: () => void; e
   const [logbook, setLogbook] = useState<LogbookFlightView[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const request = useRef<AbortController | null>(null);
   const load = useCallback(() => {
-    Promise.all([getJson<SuggestionsResponse>("/api/suggestions"), getJson<LogbookResponse>("/api/logbook")])
+    request.current?.abort();
+    const controller = new AbortController();
+    request.current = controller;
+    Promise.all([
+      getJson<SuggestionsResponse>("/api/suggestions", controller.signal),
+      getJson<LogbookResponse>("/api/logbook", controller.signal),
+    ])
       .then(([s, l]) => {
+        if (controller.signal.aborted) return;
         setError(null);
         setSuggestions(s);
         setLogbook(l.flights);
       })
-      .catch((e: Error) => setError(e.message));
+      .catch((e: Error) => {
+        if (e.name === "AbortError" || controller.signal.aborted) return;
+        setError(e.message);
+      });
   }, []);
 
   useEffect(() => {
     if (isSignedIn) load();
+    return () => request.current?.abort();
   }, [isSignedIn, load]);
 
   if (!isLoaded) return <p className={styles.loading}>Loading…</p>;
