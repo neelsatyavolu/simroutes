@@ -8,9 +8,21 @@ const display = Big_Shoulders({ variable: "--font-display", subsets: ["latin"], 
 const body = IBM_Plex_Sans_Condensed({ variable: "--font-body", subsets: ["latin"], weight: ["400", "500", "600"] });
 const mono = Martian_Mono({ variable: "--font-mono", subsets: ["latin"], weight: "variable" });
 
+const SITE_URL = "https://simroutes.n3el.dev/";
+const DESCRIPTION = "Find real-world routes by aircraft type, block time and airport size for your next sim flight.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "SimRoutes",
-  description: "Find real-world routes by aircraft type, block time and airport size for your next sim flight.",
+  description: DESCRIPTION,
+  // The image tags come from opengraph-image.png and its alt.txt beside this file.
+  openGraph: {
+    title: "SimRoutes — Real-world routes for your next sim flight",
+    description: DESCRIPTION,
+    url: SITE_URL,
+    siteName: "SimRoutes",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
