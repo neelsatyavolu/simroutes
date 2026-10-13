@@ -16,6 +16,7 @@ interface Props {
 type Notice = { tone: "ok" | "error"; text: string; details?: string[] } | null;
 
 const PREVIEW_COUNT = 8;
+const MAX_CSV_BYTES = 2 * 1024 * 1024;
 
 const summarize = (r: ImportResponse): Notice => ({
   tone: r.added > 0 ? "ok" : "error",
@@ -52,6 +53,11 @@ export function LogbookPanel({ flights, onChanged }: Props) {
 
   const importFile = (file: File | undefined) => {
     if (!file) return;
+    if (file.size > MAX_CSV_BYTES) {
+      setNotice({ tone: "error", text: "File is too large (2 MB max)" });
+      if (fileInput.current) fileInput.current.value = "";
+      return;
+    }
     void run("csv", async () =>
       sendJson<ImportResponse>("/api/logbook/import/csv", {
         method: "POST",
@@ -176,7 +182,7 @@ export function LogbookPanel({ flights, onChanged }: Props) {
               <li key={f.id}>
                 <span className={styles.route}>{f.depIcao}<span aria-hidden> → </span>{f.arrIcao}</span>
                 <span className={styles.meta}>
-                  {[f.aircraft, f.blockMinutes ? formatDuration(f.blockMinutes) : null, f.flownAt ? new Date(f.flownAt).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : null]
+                  {[f.aircraft, f.blockMinutes ? formatDuration(f.blockMinutes) : null, f.flownAt ? new Date(f.flownAt).toLocaleDateString(undefined, { day: "numeric", month: "short", timeZone: "UTC" }) : null]
                     .filter(Boolean)
                     .join(" · ")}
                 </span>

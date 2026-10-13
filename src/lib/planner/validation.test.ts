@@ -39,6 +39,11 @@ describe("parseNewPlan", () => {
   it("allows yesterday for timezone slack", () => {
     expect(parseNewPlan({ ...valid, plannedDate: "2026-09-16" }, TODAY).ok).toBe(true);
   });
+
+  it("allows one extra day ahead so timezones east of UTC can pick a year out", () => {
+    expect(parseNewPlan({ ...valid, plannedDate: "2027-09-18" }, TODAY).ok).toBe(true);
+    expect(parseNewPlan({ ...valid, plannedDate: "2027-09-19" }, TODAY).ok).toBe(false);
+  });
 });
 
 describe("parsePlanUpdate", () => {

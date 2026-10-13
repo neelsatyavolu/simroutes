@@ -1,7 +1,7 @@
 "use client";
 
 import { SignInButton, useAuth } from "@clerk/nextjs";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { formatDuration } from "@/lib/filters";
 import { getJson, sendJson } from "@/lib/http";
 import { groupPlans } from "@/lib/planner/group";
@@ -19,10 +19,12 @@ const NAVIGRAPH_NOTICES: Record<string, { tone: "ok" | "error"; text: string }> 
   "signed-out": { tone: "error", text: "Sign in to SimRoutes before connecting Navigraph." },
 };
 
-const todayLocal = () => {
+const dateLocal = (offsetDays: number) => {
   const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
+const todayLocal = () => dateLocal(0);
 
 function dayLabel(date: string, today: string): string {
   const diff = Math.round((Date.parse(`${date}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86_400_000);
@@ -131,6 +133,7 @@ function PlanCard({ plan, canLoadOfp, onChanged }: { plan: Plan; canLoadOfp: boo
               type="date"
               value={plan.plannedDate}
               min={todayLocal()}
+              max={dateLocal(365)}
               onChange={(e) => e.target.value && act("date", () => sendJson(`/api/plans/${plan.id}`, { method: "PATCH", headers: json, body: JSON.stringify({ plannedDate: e.target.value }) }))}
             />
           </label>
@@ -177,18 +180,30 @@ export function PlannedView({ navigraphOutcome, onFindFlights }: { navigraphOutc
   const [error, setError] = useState<string | null>(null);
   const [showFlown, setShowFlown] = useState(false);
 
+  const request = useRef<AbortController | null>(null);
   const load = useCallback(() => {
-    Promise.all([getJson<{ plans: Plan[] }>("/api/plans"), getJson<NavigraphStatus>("/api/navigraph")])
+    request.current?.abort();
+    const controller = new AbortController();
+    request.current = controller;
+    Promise.all([
+      getJson<{ plans: Plan[] }>("/api/plans", controller.signal),
+      getJson<NavigraphStatus>("/api/navigraph", controller.signal),
+    ])
       .then(([p, s]) => {
+        if (controller.signal.aborted) return;
         setError(null);
         setPlans(p.plans);
         setStatus(s);
       })
-      .catch((e: Error) => setError(e.message));
+      .catch((e: Error) => {
+        if (e.name === "AbortError" || controller.signal.aborted) return;
+        setError(e.message);
+      });
   }, []);
 
   useEffect(() => {
     if (isSignedIn) load();
+    return () => request.current?.abort();
   }, [isSignedIn, load]);
 
   if (!isLoaded) return <p className={styles.muted}>Loading…</p>;

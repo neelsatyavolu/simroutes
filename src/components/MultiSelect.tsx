@@ -33,6 +33,7 @@ export function MultiSelect({ label, placeholder, options, selected, onChange }:
       .filter((o) => !q || o.label.toLowerCase().includes(q) || o.value.toLowerCase().includes(q))
       .slice(0, MAX_VISIBLE);
   }, [options, selected, query]);
+  const highlighted = matches.length === 0 ? 0 : Math.min(active, matches.length - 1);
 
   const add = (value: string) => {
     onChange([...selected, value]);
@@ -49,9 +50,9 @@ export function MultiSelect({ label, placeholder, options, selected, onChange }:
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActive((i) => Math.max(i - 1, 0));
-    } else if (e.key === "Enter" && open && matches[active]) {
+    } else if (e.key === "Enter" && open && matches[highlighted]) {
       e.preventDefault();
-      add(matches[active].value);
+      add(matches[highlighted].value);
     } else if (e.key === "Backspace" && !query && selected.length) {
       remove(selected[selected.length - 1]);
     } else if (e.key === "Escape") {
@@ -94,7 +95,7 @@ export function MultiSelect({ label, placeholder, options, selected, onChange }:
             <li
               key={o.value}
               role="option"
-              aria-selected={i === active}
+              aria-selected={i === highlighted}
               className={styles.option}
               onMouseEnter={() => setActive(i)}
               // mousedown fires before the input's blur, so the click registers.

@@ -31,6 +31,19 @@ describe("resolveType", () => {
     ["FlyByWire A32NX", "A20N"],
     ["Headwind A330-900neo", "A339"],
     ["PMDG 777-300ER", "B77W"],
+    // Neo customer codes and sim titles must not fall through to the CEO type.
+    ["A320-251N", "A20N"],
+    ["A321-271N", "A21N"],
+    ["A321NX", "A21N"],
+    ["A321XLR", "A21N"],
+    ["A321LR", "A21N"],
+    ["Boeing 737-8", "B38M"],
+    ["737-8 MAX", "B38M"],
+    ["Boeing 737-8200", "B38M"],
+    ["Boeing 737 MAX 7", "B37M"],
+    ["Boeing 737 MAX 10", "B3XM"],
+    ["ATR 42-600", "AT46"],
+    ["Dash 8-400", "DH8D"],
   ])("%s → %s", (name, code) => {
     expect(resolveType(name)?.code).toBe(code);
   });
@@ -55,5 +68,7 @@ describe("familyOf", () => {
     expect(familyOf("A321")).toBe("A320");
     expect(familyOf("B38M")).toBe("B737");
     expect(familyOf("B789")).toBe("B787");
+    expect(familyOf("AT46")).toBe("ATR");
+    expect(familyOf("B3XM")).toBe("B737");
   });
 });

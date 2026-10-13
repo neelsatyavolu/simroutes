@@ -1,7 +1,7 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
-import { rankAirports, type AirportOption } from "@/lib/airport-search";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { airportCodeWhileTyping, matchAirportCode, rankAirports, type AirportOption } from "@/lib/airport-search";
 import listStyles from "./MultiSelect.module.css";
 import styles from "./AirportInput.module.css";
 
@@ -22,6 +22,10 @@ export function AirportInput({ label, placeholder, value, airports, onChange }: 
   // Free text while typing (e.g. "london"); only a real airport code is committed to the filter.
   const [text, setText] = useState(value);
   const [committed, setCommitted] = useState(value);
+  const committedRef = useRef(value);
+  useEffect(() => {
+    committedRef.current = committed;
+  }, [committed]);
   if (value !== committed) {
     // The filter changed from outside (e.g. "Clear all"): show it.
     setCommitted(value);
@@ -32,6 +36,7 @@ export function AirportInput({ label, placeholder, value, airports, onChange }: 
   const showList = open && matches.length > 0 && matches[0].icao !== text;
 
   const commit = (code: string) => {
+    committedRef.current = code;
     setCommitted(code);
     setText(code);
     onChange(code);
@@ -46,13 +51,11 @@ export function AirportInput({ label, placeholder, value, airports, onChange }: 
     setText(next);
     setOpen(true);
     setActive(0);
-    const code = next.trim().toUpperCase();
-    const exact = airports.find((a) => a.icao === code || a.iata === code);
-    if (!code) commit("");
-    else if (exact) {
-      setCommitted(exact.icao);
-      onChange(exact.icao);
-    }
+    const code = airportCodeWhileTyping(airports, next);
+    if (code === committedRef.current) return;
+    committedRef.current = code;
+    setCommitted(code);
+    onChange(code);
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -91,7 +94,20 @@ export function AirportInput({ label, placeholder, value, airports, onChange }: 
           onFocus={() => setOpen(true)}
           onBlur={() => {
             setOpen(false);
-            setText(committed); // Drop unfinished text that never matched an airport.
+            // A suggestion click or Tab updates the ref before this blur, and before React
+            // re-renders. Don't replace that pick with the half-typed code.
+            const picked = committedRef.current;
+            if (picked !== committed) {
+              setText(picked);
+              return;
+            }
+            const exact = matchAirportCode(airports, text);
+            if (exact) {
+              if (exact !== picked) commit(exact);
+              else setText(exact);
+              return;
+            }
+            setText(picked);
           }}
           onKeyDown={onKeyDown}
         />
