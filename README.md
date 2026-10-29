@@ -62,9 +62,9 @@ Each airport-day is two 12-hour calls at 2 units each. Flights come from the air
 - `GET /api/options`: aircraft types, airlines and airports present in the data
 - `GET /api/airports?q=...`: up to 30 airports matched by ICAO, IATA, name or city, independent of schedule coverage
 - `GET /api/airports/:icao/scenery`: matching MSFS 2024 scenery from the SceneryAddons compatibility index
-- `GET /api/search`: `aircraft` (repeatable), `airline`, `dep`, `arr` (ICAO or IATA), `minDuration`/`maxDuration` (minutes), `depSize`/`arrSize` (`super-large|large|medium|small|mini`), `sort` (`recommended|duration|departure|airline`), `limit`
+- `GET /api/search`: `aircraft`, `airline`, `region` (all repeatable), `flightNumber`, `dep`, `arr` (ICAO or IATA), `minDuration`/`maxDuration` (minutes), `depSize`/`arrSize` (repeatable, `super-large|large|medium|small|mini`), `sort` (`recommended|duration|departure|airline`, default `duration`), `limit` (1–500, default 100)
 
-Filtered searches default to Recommended: fewer previously visited airports first, then fewer total airport visits in the signed-in user's logbook, with block time breaking ties. All filters apply before ranking, and the result limit applies afterward. Signed-out users and empty logbooks fall back to block time.
+In the app, filtered searches default to Recommended: fewer previously visited airports first, then fewer total airport visits in the signed-in user's logbook, with block time breaking ties. All filters apply before ranking, and the result limit applies afterward. Signed-out users and empty logbooks fall back to block time.
 
 ## Volanta import
 
